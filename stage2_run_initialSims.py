@@ -26,60 +26,71 @@ def main_run_initialSims(info):
     #   Step 2: Running initial simulations  #
     # ---------------------------------------#
     
-    projectPath = info['projectPath']
     logPath = info['logPath']
     resultPath = info['resultPath']
     simPath = info['simPath']
-    targetPath = info['targetPath']
     templatePath = info['templatePath'] 
-    material = info['material']
-    optimizerName = info['optimizerName']
-    hardeningLaw = info['hardeningLaw']
-    paramConfig = info['paramConfig']
-    geometries = info['geometries']
-    deviationPercent = info['deviationPercent']
-    numberOfInitialSims = info['numberOfInitialSims']
-    maxTargetDisplacements = info['maxTargetDisplacements']
 
+    grains = info['grains']
+    strainRates = info['strainRates']
+    numberOfInitialSims = info['numberOfInitialSims']
+    
+    
     if os.path.exists(f"{resultPath}/parameters.npy"):
         parameters = np.load(f"{resultPath}/parameters.npy", allow_pickle=True).tolist()
         info['numberOfInitialSims'] = len(parameters)
         print(f"Initial parameters.npy exists in {resultPath}\n")
+        print(f"Number of initial simulations: {len(parameters)}. Parameters is loaded from {resultPath}\n")
         print("If you want to regenerate the parameters.npy, please delete parameters.npy and run the program again\n")
     else:
-        parameters = sim.latin_hypercube_sampling(geometry)
+        
+        sim = SIMULATION(info)
+        parameters = sim.sobol_sequence_sampling()
+        # parameters = sim.latin_hypercube_sampling()
         print(f"No initial parameters.npy exists in {resultPath}\n")
         print("Program will generate the parameters.npy\n")
+        print(f"Number of initial simulations: {len(parameters)}. Parameters is saved in {resultPath}\n")
+        # print(parameters)
+        # time.sleep(180)
+        np.save(f"{resultPath}/parameters.npy", parameters)
 
-    #print("Checkpoint")
-    #time.sleep(180)
+    # print("Checkpoint")
+    # time.sleep(180)
 
-    for geometry in geometries:
-        infoCopy = copy.deepcopy(info)
-        resultPathGeometry = f"{resultPath}/{geometry}"
-        simPathGeometry = f"{simPath}/{geometry}"
-        templatePathGeometry = f"{templatePath}/{geometry}"
-        infoCopy['resultPath'] = resultPathGeometry
-        infoCopy['simPath'] = simPathGeometry
-        infoCopy['templatePath'] = templatePathGeometry
-        infoCopy['maxTargetDisplacement'] = maxTargetDisplacements[geometry]
-        sim = SIMULATION(infoCopy) 
+    for grain in grains:
+        for strainRate in strainRates:
+            infoCopy = copy.deepcopy(info)
+            resultPathGrainSR = f"{resultPath}/grain_{grain}_sr_{strainRate}"
+            simPathGrainSR = f"{simPath}/grain_{grain}_sr_{strainRate}"
+            templatePathGrainSR = f"{templatePath}/grain_{grain}_sr_{strainRate}"
+            infoCopy['resultPath'] = resultPathGrainSR
+            infoCopy['simPath'] = simPathGrainSR
+            infoCopy['templatePath'] = templatePathGrainSR
+     
+            sim = SIMULATION(infoCopy) 
 
-        if not os.path.exists(f"{resultPathGeometry}/initial/common/FD_Curves_unsmooth.npy"):
-            printLog("=======================================================================", logPath)
-            printLog(f"There are no initial simulations for {geometry} geometry", logPath)
-            printLog(f"Program starts running the initial simulations for {geometry} geometry", logPath)
-            sim.run_initial_simulations(parameters)
-            printLog(f"Initial simulations for {geometry} geometry have completed", logPath)
-        else: 
-            printLog("=======================================================================", logPath)
-            printLog(f"Initial simulations for {geometry} geometry already exist", logPath)
-            numberOfInitialSims = len(np.load(f"{resultPathGeometry}/initial/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist())
-            printLog(f"Number of initial simulations for {geometry} geometry: {numberOfInitialSims} FD curves", logPath)
+            if not os.path.exists(f"{resultPathGrainSR}/initial/common/FD_Curves.npy"):
+                printLog("=======================================================================", logPath)
+                printLog(f"There are no initial simulations for grain {grain}, strain rate {strainRate}", logPath)
+                printLog(f"Program starts running the initial simulations for grain {grain}, strain rate {strainRate}", logPath)
+                sim.run_initial_simulations(parameters)
+                time.sleep(180)
+                printLog(f"Initial simulations for grain {grain}, strain rate {strainRate} have completed", logPath)
+            else: 
+                printLog("=======================================================================", logPath)
+                printLog(f"Initial simulations for grain {grain}, strain rate {strainRate} already exist", logPath)
+                numberOfInitialSims = len(np.load(f"{resultPathGrainSR}/initial/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist())
+                printLog(f"Number of initial simulations for grain {grain}, strain rate {strainRate}: {numberOfInitialSims} FD curves", logPath)
 
 if __name__ == "__main__":
+
     info = stage0_configs.main_config()
-    targetCurves, maxTargetDisplacements = stage1_prepare_targetCurve.main_prepare_targetCurve(info)
+    
+    logPath = info['logPath']
+    deviationPercent = info['deviationPercent']
+
+    targetCurves, targetCenters = stage1_prepare_targetCurve.main_prepare_targetCurve(info)
     info['targetCurves'] = targetCurves
-    info['maxTargetDisplacements'] = maxTargetDisplacements
+    info['targetCenters'] = targetCenters
+
     main_run_initialSims(info)

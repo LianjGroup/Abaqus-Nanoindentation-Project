@@ -9,7 +9,6 @@ from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *
 from modules.stoploss import *
-from optimizers.BO import *
 import stage0_configs
 from math import *
 import json
@@ -32,13 +31,14 @@ def main_prepare_simCurves(info):
     templatePath = info['templatePath'] 
     material = info['material']
     optimizerName = info['optimizerName']
-    hardeningLaw = info['hardeningLaw']
     paramConfig = info['paramConfig']
     geometries = info['geometries']
     deviationPercent = info['deviationPercent']
-    
     targetCurves = info['targetCurves']
-    
+
+    grains = info['grains']
+    strainRates = info['strainRates']
+
     # Loading initial simulations
     exampleGeometry = geometries[0]
 

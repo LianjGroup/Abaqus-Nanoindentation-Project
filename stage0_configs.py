@@ -33,7 +33,9 @@ def main_config():
     SLURM_iteration = globalConfig["SLURM_iteration"]
     numberOfInitialSims = globalConfig["numberOfInitialSims"]
     initialSimsSpacing = globalConfig["initialSimsSpacing"]
-
+    maxConcurrentSimNumber = globalConfig["maxConcurrentSimNumber"]
+    if maxConcurrentSimNumber != "max":
+        maxConcurrentSimNumber = int(maxConcurrentSimNumber)
     material = globalConfig["material"]
     CPLaw = globalConfig["CPLaw"]
     grains = globalConfig["grains"]
@@ -81,6 +83,7 @@ def main_config():
         'SLURM_iteration': SLURM_iteration,
         'numberOfInitialSims': numberOfInitialSims,
         'initialSimsSpacing': initialSimsSpacing,
+        'maxConcurrentSimNumber': maxConcurrentSimNumber,
         'material': material,
         'CPLaw': CPLaw,
         'grains': grains,
@@ -102,6 +105,8 @@ def main_config():
     logTable.field_names = ["Global Configs", "User choice"]
     logTable.add_row(["SLURM iteration", SLURM_iteration])
     logTable.add_row(["Number of initial sims", numberOfInitialSims])
+    logTable.add_row(["Initial sims spacing", initialSimsSpacing])
+    logTable.add_row(["Max concurrent sim number", maxConcurrentSimNumber])
     logTable.add_row(["Material", material])
     CPLaw_names = {"PH": "Phenomenological law", "DB": "Dislocation-based law"}
     logTable.add_row(["CP law", CPLaw_names[CPLaw]])

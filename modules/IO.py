@@ -49,13 +49,6 @@ def create_parameter_file(filePath, paramsDict):
     df.to_excel(f"{filePath}/parameters.xlsx", index=False)
     df.to_csv(f"{filePath}/parameters.csv", index=False)
 
-def create_flowCurve_file(filePath, truePlasticStrain, trueStress):
-    columns = ["strain,-", "stress,MPa", "stress,Pa"]
-    df = pd.DataFrame(columns=columns)
-    for i in range(len(truePlasticStrain)):
-        df.loc[len(df.index)] = [truePlasticStrain[i], trueStress[i], trueStress[i]*1e6]
-    df.to_excel(f"{filePath}/flowCurve.xlsx", index=False)
-    df.to_csv(f"{filePath}/flowCurve.csv", index=False)
 
 def create_FD_Curve_file(filePath, displacement, force):
     columns = ["displacement,mm", "force,kN", "force,N"]

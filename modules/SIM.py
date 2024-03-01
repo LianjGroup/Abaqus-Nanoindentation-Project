@@ -11,6 +11,7 @@ import sys
 import shutil
 import random
 import time
+import sobol_seq
 
 class SIMULATION():
     def __init__(self, info):
@@ -22,8 +23,8 @@ class SIMULATION():
         linspaceValues = {}
         for param in paramConfig:
             linspaceValues[param] = np.linspace(
-                start=paramConfig[param]["lowerBound"] * paramConfig[param]["exponent"], 
-                stop=paramConfig[param]["upperBound"] * paramConfig[param]["exponent"], 
+                start=paramConfig[param]["initial_lowerBound"] * paramConfig[param]["exponent"], 
+                stop=paramConfig[param]["initial_upperBound"] * paramConfig[param]["exponent"], 
                 num = self.info["initialSimsSpacing"])
             linspaceValues[param] = linspaceValues[param].tolist()   
         points = []
@@ -36,62 +37,80 @@ class SIMULATION():
                 if candidateParam not in points:
                     break
             points.append(candidateParam)
+        return points
+    
+    def sobol_sequence_sampling(self):
+        paramConfig = self.info["paramConfig"]
+        numberOfInitialSims = self.info["numberOfInitialSims"]
+        num_params = len(paramConfig)
 
+        # Generate Sobol sequence samples
+        sobol_samples = sobol_seq.i4_sobol_generate(num_params, numberOfInitialSims)
+
+        # Scale samples to parameter ranges
+        points = []
+        for sample in sobol_samples:
+            scaled_sample = {}
+            for i, param in enumerate(paramConfig):
+                lower_bound = paramConfig[param]["initial_lowerBound"] * paramConfig[param]["exponent"]
+                upper_bound = paramConfig[param]["initial_upperBound"] * paramConfig[param]["exponent"]
+                # Scale the Sobol sample for this parameter
+                scaled_sample[param] = lower_bound + (upper_bound - lower_bound) * sample[i]
+            points.append(scaled_sample)
         return points
 
-    def run_initial_simulations(self, parameters):
-        indexParamsDict = self.preprocess_simulations_initial(parameters)
-        self.write_paths_initial()
-        self.submit_array_jobs_initial()
-        self.postprocess_results_initial(indexParamsDict)
+    def run_initial_simulations(self, initialParams):
+        maxConcurrentSimNumber = self.info['maxConcurrentSimNumber']
+        if maxConcurrentSimNumber == "max" or maxConcurrentSimNumber >= len(initialParams):
+            indexParamsDict = self.create_indexParamsDict(initialParams)
+            self.preprocess_simulations_initial(initialParams, indexParamsDict)
+            self.write_paths_initial()
+            self.submit_array_jobs_initial()
+            self.postprocess_results_initial(indexParamsDict)
+        else:
+            indexParamsDict = self.create_indexParamsDict(initialParams)
+            for i in range(0, len(initialParams), maxConcurrentSimNumber):
+                if i + maxConcurrentSimNumber > len(initialParams):
+                    sub_indexParamsDict = dict(list(indexParamsDict.items())[i:])
+                    sub_initialParams = initialParams[i:]
+                else:
+                    sub_indexParamsDict = dict(list(indexParamsDict.items())[i:i+maxConcurrentSimNumber])
+                    sub_initialParams = initialParams[i:i+maxConcurrentSimNumber]
+                # print(sub_indexParamsDict)
+                # print(sub_initialParams)
+                # time.sleep(180)
+                indexParamsDict = self.preprocess_simulations_initial(sub_initialParams, sub_indexParamsDict)
+                self.write_paths_initial()
+                self.submit_array_jobs_initial()
+                self.postprocess_results_initial(sub_indexParamsDict)
 
-    def preprocess_simulations_initial(self, initial_params):
+    def create_indexParamsDict(self, initialParams):
+        indexParamsDict = {}
+        for index, paramDict in enumerate(initialParams):
+            indexParamsDict[str(index+1)] = tuple(paramDict.items())
+        return indexParamsDict
+    
+    def preprocess_simulations_initial(self, initialParams, indexParamsDict):
         resultPath = self.info['resultPath']
         simPath = self.info['simPath']
         templatePath = self.info['templatePath'] 
-        hardeningLaw = self.info['hardeningLaw']
-        numberOfInitialSims = self.info['numberOfInitialSims']
-        truePlasticStrain = self.info['truePlasticStrain']
-        maxTargetDisplacement = self.info['maxTargetDisplacement']
-
-        # initial_params = self.latin_hypercube_sampling()
-        # #print(initial_params)
-        # np.save(f"{resultPath}/initial/common/parameters.npy", initial_params)
-        # initial_params = np.load(f"{resultPath}/initial/common/parameters.npy", allow_pickle=True).tolist()
-        # Initializing the flow curves and force-displacement curves
-        # The structure of flow curve: dict of (hardening law params typle) -> {stress: stressArray , strain: strainArray}
         
-        flowCurves = {}
+        grains = self.info['grains']
+        strainRates = self.info['strainRates']
         
-        for paramDict in initial_params:
-            paramsTuple = tuple(paramDict.items())
-            trueStress = calculate_flowCurve(paramDict, hardeningLaw, truePlasticStrain)
-            flowCurves[paramsTuple] = {}
-            flowCurves[paramsTuple]['strain'] = truePlasticStrain
-            flowCurves[paramsTuple]['stress'] = trueStress
-        np.save(f"{resultPath}/initial/common/flowCurves.npy", flowCurves)
         #print(flowCurves)
+        currentNumberOfInitialSims = len(initialParams)
 
-        indexParamsDict = {} # Map simulation folder index to the corresponding hardening law parameters
-        for index, paramDict in enumerate(initial_params):
-            indexParamsDict[str(index+1)] = tuple(paramDict.items())
-        
-        #print(simulationDict)
-        # Copying the template folder to the simulation folder for the number of simulations
-        print(f"Number of initial simulations: {numberOfInitialSims}")
-        for index in range(1, numberOfInitialSims + 1):
+        for index, paramsTuple in indexParamsDict.items():
             # Create the simulation folder if not exists, else delete the folder and create a new one
             if os.path.exists(f"{simPath}/initial/{index}"):
                 shutil.rmtree(f"{simPath}/initial/{index}")
             shutil.copytree(templatePath, f"{simPath}/initial/{index}")
-            paramsTuple = indexParamsDict[str(index)]
-            truePlasticStrain = flowCurves[paramsTuple]['strain']
-            trueStress = flowCurves[paramsTuple]['stress']
             replace_flowCurve_material_inp(f"{simPath}/initial/{index}/material.inp", truePlasticStrain, trueStress)
             replace_maxDisp_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", maxTargetDisplacement)
             replace_materialName_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", "material.inp")
             create_parameter_file(f"{simPath}/initial/{index}", dict(paramsTuple))
-            create_flowCurve_file(f"{simPath}/initial/{index}", truePlasticStrain, trueStress)
+
         return indexParamsDict
 
     def write_paths_initial(self):

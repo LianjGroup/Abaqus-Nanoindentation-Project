@@ -11,7 +11,7 @@
 from abaqus import *
 from abaqusConstants import *
 session.Viewport(name='Viewport: 1', origin=(0.0, 0.0), width=213.143753051758, 
-    height=163.390747070312)
+    Displacement=163.390747070312)
 session.viewports['Viewport: 1'].makeCurrent()
 session.viewports['Viewport: 1'].maximize()
 from caeModules import *
@@ -47,15 +47,15 @@ xy2 = -xy1
 xy2.setValues(
     sourceDescription=' - "RF:RF3 PI: ASSEMBLY_SET-INDENTER-1 N: 67396"')
 tmpName = xy2.name
-session.xyDataObjects.changeKey(tmpName, 'Pressure')
+session.xyDataObjects.changeKey(tmpName, 'Force')
 xy1 = session.xyDataObjects['U:U3 PI: ASSEMBLY_SET-INDENTER-1 N: 67396']
 xy2 = -xy1/1000
 xy2.setValues(
     sourceDescription=' - "U:U3 PI: ASSEMBLY_SET-INDENTER-1 N: 67396"/1000')
 tmpName = xy2.name
-session.xyDataObjects.changeKey(tmpName, 'Height')
-xy1 = session.xyDataObjects['Height']
-xy2 = session.xyDataObjects['Pressure']
+session.xyDataObjects.changeKey(tmpName, 'Displacement')
+xy1 = session.xyDataObjects['Displacement']
+xy2 = session.xyDataObjects['Force']
 xy3 = combine(xy1, xy2)
 xyp = session.XYPlot('XYPlot-1')
 chartName = xyp.charts.keys()[0]
@@ -64,14 +64,14 @@ c1 = session.Curve(xyData=xy3)
 chart.setValues(curvesToPlot=(c1, ), )
 session.charts[chartName].autoColor(lines=True, symbols=True)
 session.viewports['Viewport: 1'].setValues(displayedObject=xyp)
-xy1 = session.xyDataObjects['Height']
-xy2 = session.xyDataObjects['Pressure']
+xy1 = session.xyDataObjects['Displacement']
+xy2 = session.xyDataObjects['Force']
 xy3 = combine(xy1, xy2)
-xy3.setValues(sourceDescription='combine ( "Height","Pressure" )')
+xy3.setValues(sourceDescription='combine ( "Displacement","Force" )')
 tmpName = xy3.name
-session.xyDataObjects.changeKey(tmpName, 'ph_curve')
+session.xyDataObjects.changeKey(tmpName, 'FD_Curve')
 
-x0 = session.xyDataObjects['Height']
-x1 = session.xyDataObjects['Pressure']
+x0 = session.xyDataObjects['Displacement']
+x1 = session.xyDataObjects['Force']
 
-session.writeXYReport(fileName='PH_Curve.txt', xyData=(x0, x1))
+session.writeXYReport(fileName='FD_Curve.txt', xyData=(x0, x1))

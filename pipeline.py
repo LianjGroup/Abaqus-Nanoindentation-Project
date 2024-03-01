@@ -11,7 +11,7 @@ from optimizers.optimize import *
 from modules.stoploss import *
 import stage0_configs 
 import stage1_prepare_targetCurve
-#import stage2_run_initialSims
+import stage2_run_initialSims
 #import stage3_prepare_simCurves
 #import stage4_iterative_calibration
 from math import *
@@ -35,7 +35,7 @@ def main_pipeline():
     info['targetCurves'] = targetCurves
     info['targetCenters'] = targetCenters
 
-    # stage2_run_initialSims.main_run_initialSims(info)
+    stage2_run_initialSims.main_run_initialSims(info)
     
     # FD_Curves_dict, flowCurves_dict = stage3_prepare_simCurves.main_prepare_simCurves(info) 
     # info["initial_original_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['initial_original_geom_to_param_FD_Curves_smooth']

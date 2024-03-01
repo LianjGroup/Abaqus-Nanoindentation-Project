@@ -8,12 +8,12 @@ from stage0_initialize_directory import *
 from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *
-from modules.hardeningLaws import *
+
 import copy
 
 ############################################################
 #                                                          #
-#        ABAQUS HARDENING LAW PARAMETER CALIBRATION        #
+#    ABAQUS NANOINDENTATION CPFEM PARAMETERS CALIBRATION   #
 #   Tools required: Abaqus and Finnish Supercomputer CSC   #
 #                                                          #
 ############################################################

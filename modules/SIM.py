@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 import subprocess
 import os
-import matplotlib.pyplot as mp
-from modules.hardeningLaws import *
 from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *
@@ -43,10 +41,8 @@ class SIMULATION():
         paramConfig = self.info["paramConfig"]
         numberOfInitialSims = self.info["numberOfInitialSims"]
         num_params = len(paramConfig)
-
         # Generate Sobol sequence samples
         sobol_samples = sobol_seq.i4_sobol_generate(num_params, numberOfInitialSims)
-
         # Scale samples to parameter ranges
         points = []
         for sample in sobol_samples:
@@ -63,9 +59,9 @@ class SIMULATION():
         maxConcurrentSimNumber = self.info['maxConcurrentSimNumber']
         if maxConcurrentSimNumber == "max" or maxConcurrentSimNumber >= len(initialParams):
             indexParamsDict = self.create_indexParamsDict(initialParams)
-            self.preprocess_simulations_initial(initialParams, indexParamsDict)
-            self.write_paths_initial()
-            self.submit_array_jobs_initial()
+            self.preprocess_simulations_initial(indexParamsDict)
+            self.write_paths_initial(indexParamsDict)
+            self.submit_array_jobs_initial(indexParamsDict)
             self.postprocess_results_initial(indexParamsDict)
         else:
             indexParamsDict = self.create_indexParamsDict(initialParams)
@@ -90,43 +86,35 @@ class SIMULATION():
             indexParamsDict[str(index+1)] = tuple(paramDict.items())
         return indexParamsDict
     
-    def preprocess_simulations_initial(self, initialParams, indexParamsDict):
-        resultPath = self.info['resultPath']
+    def preprocess_simulations_initial(self, indexParamsDict):
         simPath = self.info['simPath']
         templatePath = self.info['templatePath'] 
         
-        grains = self.info['grains']
-        strainRates = self.info['strainRates']
-        
-        #print(flowCurves)
-        currentNumberOfInitialSims = len(initialParams)
-
         for index, paramsTuple in indexParamsDict.items():
             # Create the simulation folder if not exists, else delete the folder and create a new one
             if os.path.exists(f"{simPath}/initial/{index}"):
                 shutil.rmtree(f"{simPath}/initial/{index}")
             shutil.copytree(templatePath, f"{simPath}/initial/{index}")
-            replace_flowCurve_material_inp(f"{simPath}/initial/{index}/material.inp", truePlasticStrain, trueStress)
-            replace_maxDisp_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", maxTargetDisplacement)
-            replace_materialName_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", "material.inp")
+            replace_parameters_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", dict(paramsTuple))
             create_parameter_file(f"{simPath}/initial/{index}", dict(paramsTuple))
 
         return indexParamsDict
 
-    def write_paths_initial(self):
-        numberOfInitialSims = self.info['numberOfInitialSims']
+    def write_paths_initial(self, indexParamsDict):
         projectPath = self.info['projectPath']
         simPath = self.info['simPath']
+
         with open("linux_slurm/array_file.txt", 'w') as filename:
-            for index in range(1, numberOfInitialSims + 1):
+            for index in list(indexParamsDict.keys()):
                 filename.write(f"{projectPath}/{simPath}/initial/{index}\n")
     
-    def submit_array_jobs_initial(self):
+    def submit_array_jobs_initial(self, indexParamsDict):
         logPath = self.info['logPath']        
-        numberOfInitialSims = self.info['numberOfInitialSims']
+        indices = ",".join(list(indexParamsDict.keys()))
+
         printLog("Initial simulation preprocessing stage starts", logPath)
-        printLog(f"Number of jobs required: {numberOfInitialSims}", logPath)
-        subprocess.run(f"sbatch --wait --array=1-{numberOfInitialSims} linux_slurm/puhti_abaqus_array_small.sh", shell=True)
+        printLog(f"Number of jobs required: {len(indexParamsDict)}", logPath)
+        subprocess.run(f"sbatch --wait --array={indices} linux_slurm/puhti_abaqus_array_small.sh", shell=True)
         printLog("Initial simulation postprocessing stage finished", logPath)
     
     def postprocess_results_initial(self, indexParamsDict):
@@ -134,54 +122,38 @@ class SIMULATION():
         simPath = self.info['simPath']
         resultPath = self.info['resultPath']
         logPath = self.info['logPath']
-        
-        # The structure of force-displacement curve: dict of (hardening law params typle) -> {force: forceArray , displacement: displacementArray}
+        deleteOutputSims = self.info['deleteOutputSims']
+        # The structure of force-displacement curve: dict of (CP params tuple of tuples) -> {force: forceArray , displacement: displacementArray}
 
         FD_Curves = {}
-        for index in range(1, numberOfInitialSims + 1):
+        for index, paramsTuple in indexParamsDict.items():
             if not os.path.exists(f"{resultPath}/initial/data/{index}"):
                 os.mkdir(f"{resultPath}/initial/data/{index}")
             shutil.copy(f"{simPath}/initial/{index}/FD_Curve.txt", f"{resultPath}/initial/data/{index}")
-            shutil.copy(f"{simPath}/initial/{index}/FD_Curve_Plot.tif", f"{resultPath}/initial/data/{index}")
-            shutil.copy(f"{simPath}/initial/{index}/Deformed_Specimen.tif", f"{resultPath}/initial/data/{index}")
             shutil.copy(f"{simPath}/initial/{index}/parameters.xlsx", f"{resultPath}/initial/data/{index}")
             shutil.copy(f"{simPath}/initial/{index}/parameters.csv", f"{resultPath}/initial/data/{index}")
-            shutil.copy(f"{simPath}/initial/{index}/flowCurve.xlsx", f"{resultPath}/initial/data/{index}")
-            shutil.copy(f"{simPath}/initial/{index}/flowCurve.csv", f"{resultPath}/initial/data/{index}")
                         
-            paramsTuple = indexParamsDict[str(index)]
             displacement, force = read_FD_Curve(f"{simPath}/initial/{index}/FD_Curve.txt")
+            create_FD_Curve_file(f"{resultPath}/initial/data/{index}", displacement, force)
+
             FD_Curves[paramsTuple] = {}
             FD_Curves[paramsTuple]['displacement'] = displacement
             FD_Curves[paramsTuple]['force'] = force
-            create_FD_Curve_file(f"{resultPath}/initial/data/{index}", displacement, force)
             
+        if deleteOutputSims == "yes":
+            for index, paramsTuple in indexParamsDict.items():
+                shutil.rmtree(f"{simPath}/initial/{index}")
         # Returning force-displacement curve data
-        np.save(f"{resultPath}/initial/common/FD_Curves_unsmooth.npy", FD_Curves)
-        printLog("Starting to apply Savgol smoothing filter on the FD curves", logPath)
-        smoothing_force(force, startIndex=20, endIndex=90, iter=10000)
-
-        FD_Curves_smooth = {}
-
-        for param in FD_Curves:
-            force = FD_Curves[param]['force']
-            smooth_force = smoothing_force(force, 40, 90, 10000)
-            displacement = FD_Curves[param]['displacement']
-            FD_Curves_smooth[param] = {}
-            FD_Curves_smooth[param]['force'] = smooth_force
-            FD_Curves_smooth[param]['displacement'] = displacement
-
-        np.save(f"{resultPath}/initial/common/FD_Curves_smooth.npy", FD_Curves_smooth)
-        printLog("Savgol smoothing of FD curves has finished", logPath)
-        printLog("Saving successfully all simulation results", logPath)
+        np.save(f"{resultPath}/initial/common/FD_Curves.npy", FD_Curves)
+        printLog("Saving successfully simulation results", logPath)
 
     def run_iteration_simulations(self, paramsDict, iterationIndex):
-        geom_to_params_flowCurves = self.preprocess_simulations_iteration(paramsDict, iterationIndex)
+        self.preprocess_simulations_iteration(paramsDict, iterationIndex)
         self.write_paths_iteration(iterationIndex)
         #time.sleep(180)
         self.submit_array_jobs_iteration()
-        geom_to_params_FD_Curves = self.postprocess_results_iteration(paramsDict, iterationIndex)
-        return geom_to_params_FD_Curves, geom_to_params_flowCurves
+        grainSR_to_params_FD_Curves = self.postprocess_results_iteration(paramsDict, iterationIndex)
+        return grainSR_to_params_FD_Curves, geom_to_params_flowCurves
     
     def preprocess_simulations_iteration(self, paramsDict, iterationIndex):
         resultPath = self.info['resultPath']
@@ -249,12 +221,8 @@ class SIMULATION():
             if not os.path.exists(f"{resultPath}/{geometry}/iteration/data/{iterationIndex}"):
                 os.mkdir(f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
             shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/FD_Curve.txt", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
-            shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/FD_Curve_Plot.tif", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
-            shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/Deformed_Specimen.tif", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
             shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/parameters.xlsx", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
             shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/parameters.csv", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
-            shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/flowCurve.xlsx", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
-            shutil.copy(f"{simPath}/{geometry}/iteration/{iterationIndex}/flowCurve.csv", f"{resultPath}/{geometry}/iteration/data/{iterationIndex}")
                         
             displacement, force = read_FD_Curve(f"{simPath}/{geometry}/iteration/{iterationIndex}/FD_Curve.txt")
             

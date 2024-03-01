@@ -44,6 +44,8 @@ def main_config():
     deviationPercentX = globalConfig["deviationPercentX"]
     deviationPercentY = globalConfig["deviationPercentY"]
     deviationPercent = {"X": deviationPercentX, "Y": deviationPercentY}
+
+    deleteOutputSims = globalConfig["deleteOutputSims"]
     
     grains = grains.split(";")
     strainRates = strainRates.split(";")
@@ -84,6 +86,7 @@ def main_config():
         'numberOfInitialSims': numberOfInitialSims,
         'initialSimsSpacing': initialSimsSpacing,
         'maxConcurrentSimNumber': maxConcurrentSimNumber,
+        'deleteOutputSims': deleteOutputSims,
         'material': material,
         'CPLaw': CPLaw,
         'grains': grains,
@@ -107,6 +110,7 @@ def main_config():
     logTable.add_row(["Number of initial sims", numberOfInitialSims])
     logTable.add_row(["Initial sims spacing", initialSimsSpacing])
     logTable.add_row(["Max concurrent sim number", maxConcurrentSimNumber])
+    logTable.add_row(["Delete output sims", deleteOutputSims])
     logTable.add_row(["Material", material])
     CPLaw_names = {"PH": "Phenomenological law", "DB": "Dislocation-based law"}
     logTable.add_row(["CP law", CPLaw_names[CPLaw]])

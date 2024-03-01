@@ -34,5 +34,5 @@ CPUS_TOTAL=$(( $SLURM_NTASKS*$SLURM_CPUS_PER_TASK ))
 # /appl/soft/eng/simulia/EstProducts/2023/linux_a64/SMA/site/lnx86_64.env
 
 abaqus job=nano_umat input=cubecorner.inp user=umat_BCC_CRYSTAL_Rate_Dependent__NewHardL_Local cpus=$CPUS_TOTAL double=both output_precision=full -verbose 2 interactive
-
+rm *.lck
 abaqus cae noGUI=postprocess.py

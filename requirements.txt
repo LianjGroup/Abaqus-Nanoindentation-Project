@@ -1,0 +1,10 @@
+numpy
+pandas
+matplotlib
+bayesian-optimization
+prettytable
+scikit-learn
+scipy
+torch
+botorch
+openpyxl

@@ -1,0 +1,183 @@
+
+Welcome to the Abaqus parameter calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+---------------+
+|     Global Configs     |  User choice  |
++------------------------+---------------+
+|    SLURM iteration     | one_node_test |
+| Number of initial sims |      100      |
+|  Initial sims spacing  |     10000     |
+|   Optimize strategy    |      SOO      |
+|        Material        |  DP1000_400C  |
+|     Hardening law      |   SwiftVoce   |
+|        Geometry        |     NDBR50    |
+|      Curve index       |       1       |
+|     Optimizer name     |       BO      |
+|   Deviation percent    |       2       |
++------------------------+---------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+c:\Users\springnuance\Desktop\Abaqus-Macromechanics-Project
+
+
+Welcome to the Abaqus parameter calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+---------------+
+|     Global Configs     |  User choice  |
++------------------------+---------------+
+|    SLURM iteration     | one_node_test |
+| Number of initial sims |      100      |
+|  Initial sims spacing  |     10000     |
+|   Optimize strategy    |      SOO      |
+|        Material        |  DP1000_400C  |
+|     Hardening law      |   SwiftVoce   |
+|        Geometry        |     NDBR50    |
+|      Curve index       |       1       |
+|     Optimizer name     |       BO      |
+|   Deviation percent    |       2       |
++------------------------+---------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+c:\Users\springnuance\Desktop\Abaqus-Macromechanics-Project
+
+
+Welcome to the Abaqus parameter calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+---------------+
+|     Global Configs     |  User choice  |
++------------------------+---------------+
+|    SLURM iteration     | one_node_test |
+| Number of initial sims |      200      |
+|  Initial sims spacing  |     10000     |
+|   Optimize strategy    |      SOO      |
+|        Material        |  DP1000_400C  |
+|     Hardening law      |   SwiftVoce   |
+|        Geometry        |     NDBR50    |
+|      Curve index       |       1       |
+|     Optimizer name     |       BO      |
+|   Deviation percent    |       2       |
++------------------------+---------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+c:\Users\springnuance\Desktop\Abaqus-Macromechanics-Project
+
+
+Welcome to the Abaqus parameter calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+---------------+
+|     Global Configs     |  User choice  |
++------------------------+---------------+
+|    SLURM iteration     | one_node_test |
+| Number of initial sims |      200      |
+|  Initial sims spacing  |     10000     |
+|   Optimize strategy    |      SOO      |
+|        Material        |  DP1000_400C  |
+|     Hardening law      |   SwiftVoce   |
+|        Geometry        |     NDBR50    |
+|      Curve index       |       1       |
+|     Optimizer name     |       BO      |
+|   Deviation percent    |       2       |
++------------------------+---------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+c:\Users\springnuance\Desktop\Abaqus-Macromechanics-Project
+
+
+Welcome to Abaqus hardening parameter calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+----------------+
+|     Global Configs     |  User choice   |
++------------------------+----------------+
+|    SLURM iteration     | one_node_small |
+| Number of initial sims |      100       |
+|   Optimize strategy    |      SOO       |
+|        Material        |  DP1000_400C   |
+|     Hardening law      |   SwiftVoce    |
+|      Curve index       |       1        |
+|        Geometry        |     NDBR50     |
+|     Optimizer name     |    BOTORCH     |
+|   Deviation percent    |       2        |
++------------------------+----------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+c:\Users\springnuance\Desktop\Abaqus-Macromechanics-Project
+
+
+Welcome to Abaqus hardening parameter calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+----------------+
+|     Global Configs     |  User choice   |
++------------------------+----------------+
+|    SLURM iteration     | one_node_small |
+| Number of initial sims |      100       |
+|   Optimize strategy    |      SOO       |
+|        Material        |  DP1000_400C   |
+|     Hardening law      |   SwiftVoce    |
+|      Curve index       |       1        |
+|        Geometry        |     NDBR50     |
+|     Optimizer name     |    BOTORCH     |
+|   Deviation percent    |       2        |
++------------------------+----------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Macromechanics-Project
+
+Initial simulations already exist
+Number of initial simulations: 100 FD curves
+Iteration simulations exist
+Number of iteration simulations: 232 FD curves
+BO optimizer is now aware of 332 points.
+
+############################################################
+
+Running iteration 233 for DP1000_400C_SwiftVoce_NDBR50_curve1
+The next candidate SwiftVoce parameters predicted by BO
+
++-----------+------------------------+
+| Parameter |         Value          |
++-----------+------------------------+
+|     W     |   0.5505408468496712   |
+|     K     | 1124.8443400584342 MPa |
+|     e0    |  0.05220755465687186   |
+|     n     |  0.15608080513359168   |
+|  sigma_y  | 683.1417014999728 MPa  |
+| sigma_sat | 874.1260607409089 MPa  |
+|     b     |   577.1493854749864    |
++-----------+------------------------+
+

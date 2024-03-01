@@ -1,0 +1,5 @@
+/scratch/project_2004956/AAA_DP1000_25C/MOO_simulations/DP1000_25C_SwiftVoce_curve1/NDBR50/iteration/61
+/scratch/project_2004956/AAA_DP1000_25C/MOO_simulations/DP1000_25C_SwiftVoce_curve1/NDBR20/iteration/61
+/scratch/project_2004956/AAA_DP1000_25C/MOO_simulations/DP1000_25C_SwiftVoce_curve1/NDBR6/iteration/61
+/scratch/project_2004956/AAA_DP1000_25C/MOO_simulations/DP1000_25C_SwiftVoce_curve1/CHD6/iteration/61
+/scratch/project_2004956/AAA_DP1000_25C/MOO_simulations/DP1000_25C_SwiftVoce_curve1/SH/iteration/61

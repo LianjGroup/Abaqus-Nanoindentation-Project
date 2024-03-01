@@ -89,13 +89,14 @@ class SIMULATION():
     def preprocess_simulations_initial(self, indexParamsDict):
         simPath = self.info['simPath']
         templatePath = self.info['templatePath'] 
+        CPLaw = self.info['CPLaw']
         
         for index, paramsTuple in indexParamsDict.items():
             # Create the simulation folder if not exists, else delete the folder and create a new one
             if os.path.exists(f"{simPath}/initial/{index}"):
                 shutil.rmtree(f"{simPath}/initial/{index}")
             shutil.copytree(templatePath, f"{simPath}/initial/{index}")
-            replace_parameters_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", dict(paramsTuple))
+            replace_parameters_geometry_inp(f"{simPath}/initial/{index}/geometry.inp", dict(paramsTuple), CPLaw)
             create_parameter_file(f"{simPath}/initial/{index}", dict(paramsTuple))
 
         return indexParamsDict
@@ -150,45 +151,31 @@ class SIMULATION():
     def run_iteration_simulations(self, paramsDict, iterationIndex):
         self.preprocess_simulations_iteration(paramsDict, iterationIndex)
         self.write_paths_iteration(iterationIndex)
-        #time.sleep(180)
         self.submit_array_jobs_iteration()
         grainSR_to_params_FD_Curves = self.postprocess_results_iteration(paramsDict, iterationIndex)
-        return grainSR_to_params_FD_Curves, geom_to_params_flowCurves
+        return grainSR_to_params_FD_Curves
     
     def preprocess_simulations_iteration(self, paramsDict, iterationIndex):
-        resultPath = self.info['resultPath']
         simPath = self.info['simPath']
         geometries = self.info['geometries']
         templatePath = self.info['templatePath'] 
-        hardeningLaw = self.info['hardeningLaw']
-        numberOfInitialSims = self.info['numberOfInitialSims']
-        truePlasticStrain = self.info['truePlasticStrain']
-        maxTargetDisplacements = self.info['maxTargetDisplacements']
+        grains = self.info['grains']
+        strainRates = self.info['strainRates']
+        CPLaw = self.info['CPLaw']
         
         paramsTuple = tuple(paramsDict.items())
-        trueStress = calculate_flowCurve(paramsDict, hardeningLaw, truePlasticStrain)
-        geom_to_params_flowCurves = {}
 
-        for geometry in geometries:
-            geom_to_params_flowCurves[geometry] = {}
-            geom_to_params_flowCurves[geometry][paramsTuple] = {}
-            geom_to_params_flowCurves[geometry][paramsTuple]['strain'] = truePlasticStrain
-            geom_to_params_flowCurves[geometry][paramsTuple]['stress'] = trueStress
-        
         # Create the simulation folder if not exists, else delete the folder and create a new one
-        for geometry in geometries:
-            if os.path.exists(f"{simPath}/{geometry}/iteration/{iterationIndex}"):
-                shutil.rmtree(f"{simPath}/{geometry}/iteration/{iterationIndex}")
-            shutil.copytree(f"{templatePath}/{geometry}", f"{simPath}/{geometry}/iteration/{iterationIndex}")
-            truePlasticStrain = geom_to_params_flowCurves[geometry][paramsTuple]['strain']
-            trueStress = geom_to_params_flowCurves[geometry][paramsTuple]['stress']
-            replace_flowCurve_material_inp(f"{simPath}/{geometry}/iteration/{iterationIndex}/material.inp", truePlasticStrain, trueStress)
-            replace_maxDisp_geometry_inp(f"{simPath}/{geometry}/iteration/{iterationIndex}/geometry.inp", maxTargetDisplacements[geometry])
-            replace_materialName_geometry_inp(f"{simPath}/{geometry}/iteration/{iterationIndex}/geometry.inp", "material.inp")
-            create_parameter_file(f"{simPath}/{geometry}/iteration/{iterationIndex}", dict(paramsTuple))
-            create_flowCurve_file(f"{simPath}/{geometry}/iteration/{iterationIndex}", truePlasticStrain, trueStress)
-        
-        return geom_to_params_flowCurves
+        for grain in grains:
+            for strainRate in strainRates:
+                grainSR = f"grain_{grain}_sr_{strainRate}"
+                if os.path.exists(f"{simPath}/{grainSR}/iteration/{iterationIndex}"):
+                    shutil.rmtree(f"{simPath}/{grainSR}/iteration/{iterationIndex}")
+                shutil.copytree(f"{templatePath}/{grainSR}", f"{simPath}/{grainSR}/iteration/{iterationIndex}")
+                replace_parameters_geometry_inp(f"{simPath}/{grainSR}/iteration/{iterationIndex}/geometry.inp", paramsDict, CPLaw)
+
+                create_parameter_file(f"{simPath}/{grainSR}/iteration/{iterationIndex}", dict(paramsTuple))        
+
 
     def write_paths_iteration(self, iterationIndex):
         projectPath = self.info['projectPath']

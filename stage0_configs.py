@@ -30,18 +30,20 @@ def main_config():
 
     globalConfig = pd.read_excel("configs/global_config.xlsx", nrows=1, engine="openpyxl")
     globalConfig = globalConfig.T.to_dict()[0]
-    material = globalConfig["material"]
-    optimizerName = globalConfig["optimizerName"]
-    hardeningLaw = globalConfig["hardeningLaw"]
-    deviationPercent = globalConfig["deviationPercent"]
-    geometry = globalConfig["geometry"]
-    yieldingIndex = globalConfig["yieldingIndex"]
-    curveIndex = globalConfig["curveIndex"]
+    SLURM_iteration = globalConfig["SLURM_iteration"]
     numberOfInitialSims = globalConfig["numberOfInitialSims"]
     initialSimsSpacing = globalConfig["initialSimsSpacing"]
-    SLURM_iteration = globalConfig["SLURM_iteration"]
 
-    geometries = geometry.split(",")
+    material = globalConfig["material"]
+    CPLaw = globalConfig["CPLaw"]
+    grains = globalConfig["grains"]
+    strainRates = globalConfig["strainRates"]
+    optimizerName = globalConfig["optimizerName"]
+    deviationPercent = globalConfig["deviationPercent"]
+    
+    grains = grains.split(";")
+    strainRates = strainRates.split(";")
+
     (
         projectPath, 
         logPath, 
@@ -50,38 +52,7 @@ def main_config():
         simPath, 
         templatePath, 
         targetPath
-    ) = initialize_directory(material, hardeningLaw, geometries, curveIndex)
-
-    yieldingIndices = str(yieldingIndex).split(";")
-    yieldingIndices = [int(i) for i in yieldingIndices]
-    yieldingIndices = dict(zip(geometries, yieldingIndices))
-    
-    #################################
-    # Plastic strain configurations #
-    #################################
-    
-    truePlasticStrainConfig = pd.read_excel(f"configs/truePlasticStrain_{hardeningLaw}_config.xlsx",engine="openpyxl")
-    ranges_and_increments = []
-
-    # Iterate over each row in the DataFrame
-    for index, row in truePlasticStrainConfig.iterrows():
-        # Append a tuple containing the strainStart, strainEnd, and strainStep to the list
-        ranges_and_increments.append((row['strainStart'], row['strainEnd'], row['strainStep']))
-        
-    truePlasticStrain = np.array([])
-
-    # Iterate through each range and increment
-    for i, (start, end, step) in enumerate(ranges_and_increments):
-        # Skip the start value for all ranges after the first one
-        if i > 0:
-            start += step
-        # Create numpy array for range
-        strain_range = np.arange(start, end + step, step)
-        strain_range = np.around(strain_range, decimals=6)
-        # Append strain_range to strain_array
-        truePlasticStrain = np.concatenate((truePlasticStrain, strain_range))
-
-    np.save(f"configs/truePlasticStrain_{hardeningLaw}.npy", truePlasticStrain)
+    ) = initialize_directory(material, CPLaw, grains, strainRates)
 
     ##################################
     # Parameter bound configurations #
@@ -105,25 +76,23 @@ def main_config():
         'simPath': simPath,
         'targetPath': targetPath,
         'templatePath': templatePath,
-        'geometries': geometries,
-        'yieldingIndices': yieldingIndices,
+        'SLURM_iteration': SLURM_iteration,
         'numberOfInitialSims': numberOfInitialSims,
         'initialSimsSpacing': initialSimsSpacing,
         'material': material,
-        'hardeningLaw': hardeningLaw,
-        'curveIndex': curveIndex,
+        'CPLaw': CPLaw,
+        'grains': grains,
+        'strainRates': strainRates,
         'optimizerName': optimizerName,
         'paramConfig': paramConfig,
         'deviationPercent': deviationPercent,
-        'truePlasticStrain': truePlasticStrain,
-        'SLURM_iteration': SLURM_iteration
     }
 
     ###############################################
     #  Printing the configurations to the console #
     ###############################################
 
-    printLog(f"\nWelcome to Abaqus hardening parameter calibration project\n\n", logPath)
+    printLog(f"\nWelcome to Abaqus nanoindentation CP param calibration project\n\n", logPath)
     printLog(f"The configurations you have chosen: \n", logPath)
     
     logTable = PrettyTable()
@@ -132,12 +101,16 @@ def main_config():
     logTable.add_row(["SLURM iteration", SLURM_iteration])
     logTable.add_row(["Number of initial sims", numberOfInitialSims])
     logTable.add_row(["Material", material])
-    logTable.add_row(["Hardening law", hardeningLaw])
-    logTable.add_row(["Curve index", curveIndex])
-    geometryString = ",".join(geometries)
-    logTable.add_row(["Geometries", geometryString])
+    CPLaw_names = {"PH": "Phenomenological law", "DB": "Dislocation-based law"}
+    logTable.add_row(["CP law", CPLaw_names[CPLaw]])
+
+    grainString = ";".join(grains)
+    strainRateString = ";".join(strainRates)
+    logTable.add_row(["Grains number", grainString])
+    logTable.add_row(["Strain rates", strainRateString])
+
     logTable.add_row(["Optimizer name", optimizerName])
-    logTable.add_row(["Deviation percent", deviationPercent])
+    logTable.add_row(["Deviation percent", f"{deviationPercent}%"])
 
     printLog(logTable.get_string() + "\n", logPath)
 
@@ -149,3 +122,6 @@ def main_config():
     # Returning the information #
     #############################
     return info
+
+if __name__ == "__main__":
+    main_config()

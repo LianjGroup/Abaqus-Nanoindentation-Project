@@ -10,7 +10,6 @@ from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *
 from modules.stoploss import *
-from optimizers.BO import *
 from stage0_configs import * 
 from math import *
 import json

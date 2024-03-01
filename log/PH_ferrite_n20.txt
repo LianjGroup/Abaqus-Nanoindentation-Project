@@ -1,0 +1,50 @@
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+----------------------+
+|     Global Configs     |     User choice      |
++------------------------+----------------------+
+|    SLURM iteration     |    one_node_small    |
+| Number of initial sims |          30          |
+|        Material        |     ferrite_n20      |
+|         CP law         | Phenomenological law |
+|     Grains number      |    1441;2744;3198    |
+|      Strain rates      |         0p1          |
+|     Optimizer name     |   LinearRegression   |
+|   Deviation percent    |          3%          |
++------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++------------------------+----------------------+
+|     Global Configs     |     User choice      |
++------------------------+----------------------+
+|    SLURM iteration     |    one_node_small    |
+| Number of initial sims |          30          |
+|        Material        |     ferrite_n20      |
+|         CP law         | Phenomenological law |
+|     Grains number      |    1441;2744;3198    |
+|      Strain rates      |         0p1          |
+|     Optimizer name     |   LinearRegression   |
+|   Deviation percent    |          3%          |
++------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+

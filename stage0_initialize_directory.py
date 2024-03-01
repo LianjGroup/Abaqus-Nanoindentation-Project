@@ -9,62 +9,63 @@ def checkCreate(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def initialize_directory(material, hardeningLaw, geometries, curveIndex):
-
-    # For log
-    checkCreate("log")
+def initialize_directory(material, CPLaw, grains, strainRates):
 
     # For paramInfo
-    path = f"paramInfo/{material}_{hardeningLaw}_curve{curveIndex}"
+    path = f"paramInfo/{CPLaw}_{material}"
     checkCreate(path)
     
     # For results 
-    path = f"results/{material}_{hardeningLaw}_curve{curveIndex}"
+    path = f"results/{CPLaw}_{material}"
     checkCreate(path)
-    for geometry in geometries:
-        checkCreate(f"{path}/{geometry}")
-        checkCreate(f"{path}/{geometry}/initial")
-        checkCreate(f"{path}/{geometry}/initial/data")
-        checkCreate(f"{path}/{geometry}/initial/common")
-        checkCreate(f"{path}/{geometry}/iteration")
-        checkCreate(f"{path}/{geometry}/iteration/data")
-        checkCreate(f"{path}/{geometry}/iteration/common")
+    for grain in grains:
+        for strainRate in strainRates:
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/initial")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/initial/data")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/initial/common")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/iteration")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/iteration/data")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/iteration/common")
 
     # For simulations
-    path = f"simulations/{material}_{hardeningLaw}_curve{curveIndex}"
+    path = f"simulations/{CPLaw}_{material}"
     checkCreate(path)
-    for geometry in geometries:
-        checkCreate(f"{path}/{geometry}")
-        checkCreate(f"{path}/{geometry}/initial")
-        checkCreate(f"{path}/{geometry}/iteration")
+    for grain in grains:
+        for strainRate in strainRates:
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/initial")
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}/iteration")
 
     # For targets
-    path = f"targets/{material}_{hardeningLaw}_curve{curveIndex}"
+    path = f"targets/{CPLaw}_{material}"
     checkCreate(path)
-    for geometry in geometries:
-        checkCreate(f"{path}/{geometry}")
+    for grain in grains:
+        for strainRate in strainRates:
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}")
 
     # For templates
-    path = f"templates/{material}"
+    path = f"templates/{CPLaw}_{material}"
     checkCreate(path)
-    for geometry in geometries:
-        checkCreate(f"{path}/{geometry}")
+    for grain in grains:
+        for strainRate in strainRates:
+            checkCreate(f"{path}/grain_{grain}_sr_{strainRate}")
 
     # The project path folder
     projectPath = os.getcwd()
     
     # The logging path
-    logPath = f"log/{material}_{hardeningLaw}_curve{curveIndex}.txt"
+    logPath = f"log/{CPLaw}_{material}.txt"
     # The paramInfo path
-    paramInfoPath = f"paramInfo/{material}_{hardeningLaw}_curve{curveIndex}"
+    paramInfoPath = f"paramInfo/{CPLaw}_{material}"
     # The results path
-    resultPath = f"results/{material}_{hardeningLaw}_curve{curveIndex}"
+    resultPath = f"results/{CPLaw}_{material}"
     # The simulations path
-    simPath = f"simulations/{material}_{hardeningLaw}_curve{curveIndex}"
+    simPath = f"simulations/{CPLaw}_{material}"
     # The target path
-    targetPath = f"targets/{material}_{hardeningLaw}_curve{curveIndex}"
+    targetPath = f"targets/{CPLaw}_{material}"
     # The templates path
-    templatePath = f"templates/{material}"
+    templatePath = f"templates/{CPLaw}_{material}"
 
     return projectPath, logPath, paramInfoPath, resultPath, simPath, templatePath, targetPath
 
@@ -72,16 +73,14 @@ if __name__ == "__main__":
     globalConfig = pd.read_excel("configs/global_config.xlsx", nrows=1, engine="openpyxl")
     globalConfig = globalConfig.T.to_dict()[0]
     material = globalConfig["material"]
-    optimizerName = globalConfig["optimizerName"]
-    hardeningLaw = globalConfig["hardeningLaw"]
-    deviationPercent = globalConfig["deviationPercent"]
-    geometry = globalConfig["geometry"]
-    curveIndex = globalConfig["curveIndex"]
-    numberOfInitialSims = globalConfig["numberOfInitialSims"]
-    initialSimsSpacing = globalConfig["initialSimsSpacing"]
+    CPLaw = globalConfig["CPLaw"]
+    grains = globalConfig["grains"]
+    strainRates = globalConfig["strainRates"]
 
-    geometries = geometry.split(",")
-    initialize_directory(material, hardeningLaw, geometries, curveIndex)
+    grains = grains.split(";")
+    strainRates = strainRates.split(";")
+    
+    initialize_directory(material, CPLaw, grains, strainRates)
     
 
     

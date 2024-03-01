@@ -31,9 +31,9 @@ def main_pipeline():
     logPath = info['logPath']
     deviationPercent = info['deviationPercent']
 
-    # targetCurves, maxTargetDisplacements = stage1_prepare_targetCurve.main_prepare_targetCurve(info)
-    # info['targetCurves'] = targetCurves
-    # info['maxTargetDisplacements'] = maxTargetDisplacements
+    targetCurves, targetCenters = stage1_prepare_targetCurve.main_prepare_targetCurve(info)
+    info['targetCurves'] = targetCurves
+    info['targetCenters'] = targetCenters
 
     # stage2_run_initialSims.main_run_initialSims(info)
     

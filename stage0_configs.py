@@ -39,7 +39,9 @@ def main_config():
     grains = globalConfig["grains"]
     strainRates = globalConfig["strainRates"]
     optimizerName = globalConfig["optimizerName"]
-    deviationPercent = globalConfig["deviationPercent"]
+    deviationPercentX = globalConfig["deviationPercentX"]
+    deviationPercentY = globalConfig["deviationPercentY"]
+    deviationPercent = {"X": deviationPercentX, "Y": deviationPercentY}
     
     grains = grains.split(";")
     strainRates = strainRates.split(";")
@@ -110,7 +112,8 @@ def main_config():
     logTable.add_row(["Strain rates", strainRateString])
 
     logTable.add_row(["Optimizer name", optimizerName])
-    logTable.add_row(["Deviation percent", f"{deviationPercent}%"])
+    logTable.add_row(["Deviation percent X", f"{deviationPercentX}"])
+    logTable.add_row(["Deviation percent Y", f"{deviationPercentY}"])
 
     printLog(logTable.get_string() + "\n", logPath)
 

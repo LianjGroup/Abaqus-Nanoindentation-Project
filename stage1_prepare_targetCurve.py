@@ -24,35 +24,33 @@ def main_prepare_targetCurve(info):
     # ----------------------------------#
     
     targetPath = info['targetPath']
-    grains = info['grains']
-    strainRates = info['strainRates']
+    objectives = info['objectives']
     
     targetCurves = {}
     targetCenters = {}
 
-    for grain in grains:
-        for strainRate in strainRates:
-            df = pd.read_excel(f"{targetPath}/grain_{grain}_sr_{strainRate}/FD_Curve.xlsx", engine='openpyxl')
-            expDisplacement = df['displacement/nm'].to_numpy()
-            expForce = df['force/microN'].to_numpy()
-            targetCurve = {}
-            targetCurve['displacement'] = expDisplacement
-            targetCurve['force'] = expForce
-            # picking N points with largest force, and their corresponding displacement
-            n = 50
-            # get the indices of the n largest values
-            indices = np.argpartition(expForce, -n)[-n:]
-            # get the corresponding displacement
-            largest_displacement = expDisplacement[indices]
-            largest_force = expForce[indices]
+    for objective in objectives:
+        df = pd.read_excel(f"{targetPath}/{objective}/FD_Curve.xlsx", engine='openpyxl')
+        expDisplacement = df['displacement/nm'].to_numpy()
+        expForce = df['force/microN'].to_numpy()
+        targetCurve = {}
+        targetCurve['displacement'] = expDisplacement
+        targetCurve['force'] = expForce
+        # picking N points with largest force, and their corresponding displacement
+        n = 50
+        # get the indices of the n largest values
+        indices = np.argpartition(expForce, -n)[-n:]
+        # get the corresponding displacement
+        largest_displacement = expDisplacement[indices]
+        largest_force = expForce[indices]
 
-            # Taking the mean is a good approximation for the center
-            x_center, y_center = np.mean(largest_displacement), np.mean(largest_force)
-            targetCenter = {"X": x_center, "Y": y_center}
+        # Taking the mean is a good approximation for the center
+        x_center, y_center = np.mean(largest_displacement), np.mean(largest_force)
+        targetCenter = {"X": x_center, "Y": y_center}
 
-            targetCurves[f"grain_{grain}_sr_{strainRate}"] = targetCurve
-            targetCenters[f"grain_{grain}_sr_{strainRate}"] = targetCenter
-            
+        targetCurves[objective] = targetCurve
+        targetCenters[objective] = targetCenter
+        
     #print(targetCurves)
     #print(targetCenters)
     #time.sleep(180)

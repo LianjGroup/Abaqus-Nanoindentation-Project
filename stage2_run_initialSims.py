@@ -31,8 +31,7 @@ def main_run_initialSims(info):
     simPath = info['simPath']
     templatePath = info['templatePath'] 
 
-    grains = info['grains']
-    strainRates = info['strainRates']
+    objectives = info['objectives']
     numberOfInitialSims = info['numberOfInitialSims']
     
     
@@ -57,30 +56,29 @@ def main_run_initialSims(info):
     # print("Checkpoint")
     # time.sleep(180)
 
-    for grain in grains:
-        for strainRate in strainRates:
-            infoCopy = copy.deepcopy(info)
-            resultPathGrainSR = f"{resultPath}/grain_{grain}_sr_{strainRate}"
-            simPathGrainSR = f"{simPath}/grain_{grain}_sr_{strainRate}"
-            templatePathGrainSR = f"{templatePath}/grain_{grain}_sr_{strainRate}"
-            infoCopy['resultPath'] = resultPathGrainSR
-            infoCopy['simPath'] = simPathGrainSR
-            infoCopy['templatePath'] = templatePathGrainSR
-     
-            sim = SIMULATION(infoCopy) 
+    for objective in objectives:
+        infoCopy = copy.deepcopy(info)
+        resultPathObjective = f"{resultPath}/{objective}"
+        simPathObjective = f"{simPath}/{objective}"
+        templatePathObjective = f"{templatePath}/{objective}"
+        infoCopy['resultPath'] = resultPathObjective
+        infoCopy['simPath'] = simPathObjective
+        infoCopy['templatePath'] = templatePathObjective
+    
+        sim = SIMULATION(infoCopy) 
 
-            if not os.path.exists(f"{resultPathGrainSR}/initial/common/FD_Curves.npy"):
-                printLog("=======================================================================", logPath)
-                printLog(f"There are no initial simulations for grain {grain}, strain rate {strainRate}", logPath)
-                printLog(f"Program starts running the initial simulations for grain {grain}, strain rate {strainRate}", logPath)
-                sim.run_initial_simulations(parameters)
-                time.sleep(180)
-                printLog(f"Initial simulations for grain {grain}, strain rate {strainRate} have completed", logPath)
-            else: 
-                printLog("=======================================================================", logPath)
-                printLog(f"Initial simulations for grain {grain}, strain rate {strainRate} already exist", logPath)
-                numberOfInitialSims = len(np.load(f"{resultPathGrainSR}/initial/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist())
-                printLog(f"Number of initial simulations for grain {grain}, strain rate {strainRate}: {numberOfInitialSims} FD curves", logPath)
+        if not os.path.exists(f"{resultPathObjective}/initial/common/FD_Curves.npy"):
+            printLog("=======================================================================", logPath)
+            printLog(f"There are no initial simulations for {objective}", logPath)
+            printLog(f"Program starts running the initial simulations for {objective}", logPath)
+            sim.run_initial_simulations(parameters)
+            time.sleep(180)
+            printLog(f"Initial simulations for {objective} have completed", logPath)
+        else: 
+            printLog("=======================================================================", logPath)
+            printLog(f"Initial simulations for {objective} already exist", logPath)
+            numberOfInitialSims = len(np.load(f"{resultPathObjective}/initial/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist())
+            printLog(f"Number of initial simulations for {objective}: {numberOfInitialSims} FD curves", logPath)
 
 if __name__ == "__main__":
 

@@ -39,11 +39,10 @@ def initialize_directory(material, CPLaw, grains, strainRates):
     # For simulations
     path = f"simulations/{optimizing_instance}"
     checkCreate(path)
-    for grain in grains:
-        for strainRate in strainRates:
-            checkCreate(f"{path}/{objective}")
-            checkCreate(f"{path}/{objective}/initial")
-            checkCreate(f"{path}/{objective}/iteration")
+    for objective in objectives:
+        checkCreate(f"{path}/{objective}")
+        checkCreate(f"{path}/{objective}/initial")
+        checkCreate(f"{path}/{objective}/iteration")
 
     # For targets
     path = f"targets/{optimizing_instance}"
@@ -54,9 +53,8 @@ def initialize_directory(material, CPLaw, grains, strainRates):
     # For templates
     path = f"templates/{optimizing_instance}"
     checkCreate(path)
-    for grain in grains:
-        for strainRate in strainRates:
-            checkCreate(f"{path}/{objective}")
+    for objective in objectives:
+        checkCreate(f"{path}/{objective}")
 
     # The project path folder
     projectPath = os.getcwd()

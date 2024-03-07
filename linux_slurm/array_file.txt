@@ -1,0 +1,5 @@
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project/simulations/PH_ferrite_n20/grain_1441_sr_0p1/initial/1
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project/simulations/PH_ferrite_n20/grain_1441_sr_0p1/initial/2
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project/simulations/PH_ferrite_n20/grain_1441_sr_0p1/initial/3
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project/simulations/PH_ferrite_n20/grain_1441_sr_0p1/initial/4
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project/simulations/PH_ferrite_n20/grain_1441_sr_0p1/initial/5

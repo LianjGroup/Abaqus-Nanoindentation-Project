@@ -14,7 +14,11 @@ import sobol_seq
 class SIMULATION():
     def __init__(self, info):
         self.info = info
-   
+    
+    ##############################
+    # PARAMETER SAMPLING METHODS #
+    ##############################
+        
     def latin_hypercube_sampling(self):
         paramConfig = self.info["paramConfig"]
         numberOfInitialSims = self.info["numberOfInitialSims"]
@@ -36,7 +40,7 @@ class SIMULATION():
                     break
             points.append(candidateParam)
         return points
-    
+
     def sobol_sequence_sampling(self):
         paramConfig = self.info["paramConfig"]
         numberOfInitialSims = self.info["numberOfInitialSims"]
@@ -55,35 +59,29 @@ class SIMULATION():
             points.append(scaled_sample)
         return points
 
-    def run_initial_simulations(self, initialParams):
-        maxConcurrentSimNumber = self.info['maxConcurrentSimNumber']
-        if maxConcurrentSimNumber == "max" or maxConcurrentSimNumber >= len(initialParams):
-            indexParamsDict = self.create_indexParamsDict(initialParams)
-            self.preprocess_simulations_initial(indexParamsDict)
-            self.write_paths_initial(indexParamsDict)
-            self.submit_array_jobs_initial(indexParamsDict)
-            self.postprocess_results_initial(indexParamsDict)
-        else:
-            indexParamsDict = self.create_indexParamsDict(initialParams)
-            for i in range(0, len(initialParams), maxConcurrentSimNumber):
-                if i + maxConcurrentSimNumber > len(initialParams):
-                    sub_indexParamsDict = dict(list(indexParamsDict.items())[i:])
-                    sub_initialParams = initialParams[i:]
-                else:
-                    sub_indexParamsDict = dict(list(indexParamsDict.items())[i:i+maxConcurrentSimNumber])
-                    sub_initialParams = initialParams[i:i+maxConcurrentSimNumber]
-                # print(sub_indexParamsDict)
-                # print(sub_initialParams)
-                # time.sleep(180)
-                indexParamsDict = self.preprocess_simulations_initial(sub_initialParams, sub_indexParamsDict)
-                self.write_paths_initial()
-                self.submit_array_jobs_initial()
-                self.postprocess_results_initial(sub_indexParamsDict)
+    ###############################
+    # INITIAL SIMULATION PIPELINE #
+    ###############################
 
-    def create_indexParamsDict(self, initialParams):
+    def run_initial_simulations(self, initialParams, currentIndices, batchNumber):
+        deleteSimOutputs = self.info['deleteSimOutputs']
+        indexParamsDict = self.create_indexParamsDict(initialParams, currentIndices)
+        self.preprocess_simulations_initial(indexParamsDict)
+        self.write_paths_initial(indexParamsDict)
+        self.submit_array_jobs_initial(indexParamsDict)
+        self.postprocess_results_initial(indexParamsDict, batchNumber)
+        if deleteSimOutputs:
+            self.delete_sim_outputs(indexParamsDict)
+
+    ##############################
+    # INITIAL SIMULATION METHODS #
+    ##############################
+                
+    def create_indexParamsDict(self, initialParams, currentIndices):
         indexParamsDict = {}
-        for index, paramDict in enumerate(initialParams):
-            indexParamsDict[str(index+1)] = tuple(paramDict.items())
+        for order, paramDict in enumerate(initialParams):
+            index = str(currentIndices[order])
+            indexParamsDict[index] = tuple(paramDict.items())
         return indexParamsDict
     
     def preprocess_simulations_initial(self, indexParamsDict):
@@ -118,12 +116,12 @@ class SIMULATION():
         subprocess.run(f"sbatch --wait --array={indices} linux_slurm/puhti_abaqus_array_small.sh", shell=True)
         printLog("Initial simulation postprocessing stage finished", logPath)
     
-    def postprocess_results_initial(self, indexParamsDict):
-        numberOfInitialSims = self.info['numberOfInitialSims']
+    def postprocess_results_initial(self, indexParamsDict, batchNumber):
+
         simPath = self.info['simPath']
         resultPath = self.info['resultPath']
         logPath = self.info['logPath']
-        deleteSimOutputs = self.info['deleteSimOutputs']
+        
         # The structure of force-displacement curve: dict of (CP params tuple of tuples) -> {force: forceArray , displacement: displacementArray}
 
         FD_Curves = {}
@@ -140,41 +138,50 @@ class SIMULATION():
             FD_Curves[paramsTuple] = {}
             FD_Curves[paramsTuple]['displacement'] = displacement
             FD_Curves[paramsTuple]['force'] = force
-            
-        if deleteSimOutputs == "yes":
-            for index, paramsTuple in indexParamsDict.items():
-                shutil.rmtree(f"{simPath}/initial/{index}")
+                    
         # Returning force-displacement curve data
-        np.save(f"{resultPath}/initial/common/FD_Curves.npy", FD_Curves)
-        printLog("Saving successfully simulation results", logPath)
+        if batchNumber == "all":
+            np.save(f"{resultPath}/initial/common/FD_Curves.npy", FD_Curves)
+            printLog("Saving successfully FD_Curves.npy results", logPath)
+        else:
+            np.save(f"{resultPath}/initial/common/FD_Curves_batch_{batchNumber}.npy", FD_Curves)
+            printLog(f"Saving successfully FD_Curves_batch_{batchNumber}.npy results", logPath)
+    
+    def delete_sim_outputs(self, indexParamsDict):
+        simPath = self.info['simPath']
+        for index, paramsTuple in indexParamsDict.items():
+            shutil.rmtree(f"{simPath}/initial/{index}")
 
+    #################################
+    # ITERATION SIMULATION PIPELINE #
+    #################################
+    
     def run_iteration_simulations(self, paramsDict, iterationIndex):
         self.preprocess_simulations_iteration(paramsDict, iterationIndex)
         self.write_paths_iteration(iterationIndex)
         self.submit_array_jobs_iteration()
         grainSR_to_params_FD_Curves = self.postprocess_results_iteration(paramsDict, iterationIndex)
         return grainSR_to_params_FD_Curves
-    
+
+    ################################
+    # ITERATION SIMULATION METHODS #
+    ################################
+
     def preprocess_simulations_iteration(self, paramsDict, iterationIndex):
         simPath = self.info['simPath']
-        geometries = self.info['geometries']
         templatePath = self.info['templatePath'] 
-        grains = self.info['grains']
-        strainRates = self.info['strainRates']
+        objectives = self.info['objectives']
         CPLaw = self.info['CPLaw']
         
         paramsTuple = tuple(paramsDict.items())
 
         # Create the simulation folder if not exists, else delete the folder and create a new one
-        for grain in grains:
-            for strainRate in strainRates:
-                grainSR = f"grain_{grain}_sr_{strainRate}"
-                if os.path.exists(f"{simPath}/{grainSR}/iteration/{iterationIndex}"):
-                    shutil.rmtree(f"{simPath}/{grainSR}/iteration/{iterationIndex}")
-                shutil.copytree(f"{templatePath}/{grainSR}", f"{simPath}/{grainSR}/iteration/{iterationIndex}")
-                replace_parameters_geometry_inp(f"{simPath}/{grainSR}/iteration/{iterationIndex}/geometry.inp", paramsDict, CPLaw)
-
-                create_parameter_file(f"{simPath}/{grainSR}/iteration/{iterationIndex}", dict(paramsTuple))        
+        for objective in objectives:
+            if os.path.exists(f"{simPath}/{objective}/iteration/{iterationIndex}"):
+                shutil.rmtree(f"{simPath}/{objective}/iteration/{iterationIndex}")
+            shutil.copytree(f"{templatePath}/{objective}", f"{simPath}/{objective}/iteration/{iterationIndex}")
+            replace_parameters_geometry_inp(f"{simPath}/{objective}/iteration/{iterationIndex}/geometry.inp", paramsDict, CPLaw)
+            create_parameter_file(f"{simPath}/{objective}/iteration/{iterationIndex}", dict(paramsTuple))        
 
 
     def write_paths_iteration(self, iterationIndex):

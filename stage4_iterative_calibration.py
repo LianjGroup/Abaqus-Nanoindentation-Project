@@ -5,12 +5,10 @@ from sklearn.metrics import mean_squared_error
 from scipy.interpolate import CubicSpline
 from scipy.interpolate import interp1d
 from modules.SIM import *
-from modules.hardeningLaws import *
 from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *
 from modules.stoploss import *
-from optimizers.BO import *
 import stage0_configs 
 from math import *
 import json
@@ -87,40 +85,6 @@ def main_iterative_calibration(info):
             next_paramDict = BO_instance.suggest()
             next_paramDict = rescale_paramsDict(next_paramDict, paramConfig)
             
-        # Multiple objective optimization strategy (Vedant's Task)
-
-        # In order to see whats going on, please use the print() plus time.sleep(180) to stop the code to inspect what is inside a variable 
-        # For example, if you want to see what is paramConfig, please use the following code:
-        # print(paramConfig)
-        # print("Hello") -> This print here helps making sure it has stopped at correct place
-        # time.sleep(180) 
-        # Then run python optimize.py
-
-        # Given these informations, you should be able to program the optimizer to return the next_paramDict
-        
-        # parameter bounds, exponents and names are stored in paramConfig. Dictionary (paramName) -> dict of parameter properties
-        
-        # The existing initial and iteration FD curves stored in combined_interpolated_param_to_geom_FD_Curves_smooth
-        # combined_interpolated_param_to_geom_FD_Curves_smooth is of structure
-        # {paramTuples: {geometryName: {force: np.array(), displacement: np.array()}}}
-        
-        # where geometryNames are stored in the variable "geometries" of type list
-        
-        # the targetCurves for storing the experimental FD curves. It is of structure
-        # {geometryName: {force: np.array(), displacement: np.array()}}
-
-        # You can also use geometryWeights to weight the geometries in the optimization process if your algorithm needs weights
-        # geometryWeights is of structure
-        # {geometryName: weight}, where sum of the weight equals to 1
-
-        # Given these information, you should program the optimizer to return the next_paramDict
-        # The next_paramDict should be a dictionary with the Swift Voce parameters as keys and 
-        # the values are the next predicted parameter values for the next iteration
-        # Apart from these, you dont need to care much about anything else
-        
-        # Please pay attention to the param bounds, where it has not have the exponents. 
-        # If your optimizer returns parameters within the bounds, you need to rescale the parameters to the correct scale by multiplying it with the exponents
-        
         if optimizerName == "BOTORCH":
             pareto_front = MOO_suggest_BOTORCH(combined_interpolated_param_to_geom_FD_Curves_smooth, targetCurves, geometries, yieldingIndices, paramConfig,iterationIndex)
             # Select a random point from the pareto front

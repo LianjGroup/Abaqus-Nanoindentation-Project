@@ -123,7 +123,7 @@ class SIMULATION():
         simPath = self.info['simPath']
         resultPath = self.info['resultPath']
         logPath = self.info['logPath']
-        deleteOutputSims = self.info['deleteOutputSims']
+        deleteSimOutputs = self.info['deleteSimOutputs']
         # The structure of force-displacement curve: dict of (CP params tuple of tuples) -> {force: forceArray , displacement: displacementArray}
 
         FD_Curves = {}
@@ -141,7 +141,7 @@ class SIMULATION():
             FD_Curves[paramsTuple]['displacement'] = displacement
             FD_Curves[paramsTuple]['force'] = force
             
-        if deleteOutputSims == "yes":
+        if deleteSimOutputs == "yes":
             for index, paramsTuple in indexParamsDict.items():
                 shutil.rmtree(f"{simPath}/initial/{index}")
         # Returning force-displacement curve data

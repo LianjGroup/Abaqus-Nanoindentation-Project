@@ -5,7 +5,6 @@ from sklearn.metrics import mean_squared_error
 from scipy.interpolate import CubicSpline
 from scipy.interpolate import interp1d
 from modules.SIM import *
-from modules.hardeningLaws import *
 from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *

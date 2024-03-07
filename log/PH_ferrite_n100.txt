@@ -302,3 +302,70 @@ C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
 =======================================================================
 There are no initial simulations for grain 1441, strain rate 0p1
 Program starts running the initial simulations for grain 1441, strain rate 0p1
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          30          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          6           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n100     |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |      0p1;1;100       |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          3           |
+|    Deviation percent Y    |          3           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          30          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          6           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n100     |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |      0p1;1;100       |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          3           |
+|    Deviation percent Y    |          3           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+There are no initial simulations for grain_1441_sr_0p1
+Program starts running the initial simulations for grain_1441_sr_0p1

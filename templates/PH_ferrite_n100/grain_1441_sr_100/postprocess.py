@@ -11,7 +11,7 @@
 from abaqus import *
 from abaqusConstants import *
 session.Viewport(name='Viewport: 1', origin=(0.0, 0.0), width=213.143753051758, 
-    Displacement=163.390747070312)
+    height=163.390747070312)
 session.viewports['Viewport: 1'].makeCurrent()
 session.viewports['Viewport: 1'].maximize()
 from caeModules import *
@@ -22,7 +22,7 @@ os.chdir(os.getcwd())
 executeOnCaeStartup()
 session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
     referenceRepresentation=ON)
-o1 = session.openOdb(name='nano_umat.odb')
+o1 = session.openOdb(name='geometry.odb')
 session.viewports['Viewport: 1'].setValues(displayedObject=o1)
 #: Warning: The output database file has been loaded, but its format does not match the latest format supported by this version of ABAQUS.
 #: 
@@ -38,7 +38,7 @@ session.viewports['Viewport: 1'].setValues(displayedObject=o1)
 #: Number of Node Sets:          14
 #: Number of Steps:              1
 
-odb = session.odbs['nano_umat.odb']
+odb = session.odbs['geometry.odb']
 session.xyDataListFromField(odb=odb, outputPosition=NODAL, variable=(('RF', 
     NODAL, ((COMPONENT, 'RF3'), )), ('U', NODAL, ((COMPONENT, 'U3'), )), ), 
     nodeSets=("REFERENCE_POINT_ASSEMBLY_SET-INDENTER-1    67396", ))

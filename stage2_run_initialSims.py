@@ -35,12 +35,12 @@ def main_run_initialSims(info):
     maxConcurrentSimNumber = info['maxConcurrentSimNumber']
     deleteSimOutputs = info['deleteSimOutputs']
     
-    if os.path.exists(f"{resultPath}/parameters.npy"):
+    if os.path.exists(f"{resultPath}/initialParameters.npy"):
         initialParams = np.load(f"{resultPath}/parameters.npy", allow_pickle=True).tolist()
         info['numberOfInitialSims'] = len(initialParams)
-        print(f"Initial parameters.npy exists in {resultPath}\n")
+        print(f"initialParameters.npy exists in {resultPath}\n")
         print(f"Number of initial simulations: {len(initialParams)}. Parameters is loaded from {resultPath}\n")
-        print("If you want to regenerate the parameters.npy, please delete parameters.npy and run the program again\n")
+        print("If you want to regenerate the initialParameters.npy, please delete initialParameters.npy and run the program again\n")
     else:
         
         sim = SIMULATION(info)

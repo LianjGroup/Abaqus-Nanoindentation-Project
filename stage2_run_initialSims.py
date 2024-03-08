@@ -84,7 +84,7 @@ def main_run_initialSims(info):
                 printLog(f"Initial simulations for {objective} have completed", logPath)
             else:
                 for i in range(0, len(initialParams), maxConcurrentSimNumber):
-                    batchNumber = i + 1
+                    batchNumber = int(i/maxConcurrentSimNumber + 1)
                     currentIndices = range(i + 1, i + maxConcurrentSimNumber + 1)
 
                     if not os.path.exists(f"{resultPathObjective}/initial/common/FD_Curves_batch_{batchNumber}.npy"):
@@ -107,7 +107,7 @@ def main_run_initialSims(info):
 
                 FD_Curves = {}
                 for i in range(0, len(initialParams), maxConcurrentSimNumber):
-                    batchNumber = i + 1
+                    batchNumber = int(i/maxConcurrentSimNumber + 1)
                     FD_Curves_batch = np.load(f"{resultPathObjective}/initial/common/FD_Curves_batch_{batchNumber}.npy", allow_pickle=True).tolist()
                     FD_Curves.update(FD_Curves_batch)
                 np.save(f"{resultPathObjective}/initial/common/FD_Curves.npy", FD_Curves)

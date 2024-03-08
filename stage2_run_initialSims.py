@@ -36,7 +36,7 @@ def main_run_initialSims(info):
     deleteSimOutputs = info['deleteSimOutputs']
     
     if os.path.exists(f"{resultPath}/initialParameters.npy"):
-        initialParams = np.load(f"{resultPath}/parameters.npy", allow_pickle=True).tolist()
+        initialParams = np.load(f"{resultPath}/initialParameters.npy", allow_pickle=True).tolist()
         info['numberOfInitialSims'] = len(initialParams)
         print(f"initialParameters.npy exists in {resultPath}\n")
         print(f"Number of initial simulations: {len(initialParams)}. Parameters is loaded from {resultPath}\n")

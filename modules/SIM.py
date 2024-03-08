@@ -109,11 +109,11 @@ class SIMULATION():
     
     def submit_array_jobs_initial(self, indexParamsDict):
         logPath = self.info['logPath']        
-        indices = ",".join(list(indexParamsDict.keys()))
+        numberOfSims = len(indexParamsDict)
 
         printLog("Initial simulation preprocessing stage starts", logPath)
-        printLog(f"Number of jobs required: {len(indexParamsDict)}", logPath)
-        subprocess.run(f"sbatch --wait --array={indices} linux_slurm/puhti_abaqus_array_small.sh", shell=True)
+        printLog(f"Number of jobs required: {numberOfSims}", logPath)
+        subprocess.run(f"sbatch --wait --array=1-{numberOfSims} linux_slurm/puhti_abaqus_array_small.sh", shell=True)
         printLog("Initial simulation postprocessing stage finished", logPath)
     
     def postprocess_results_initial(self, indexParamsDict, batchNumber):

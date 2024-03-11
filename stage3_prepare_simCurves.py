@@ -18,95 +18,59 @@ import copy
 
 def main_prepare_simCurves(info):
 
-    # -------------------------------------------------------------------------------------#
-    #   Step 3: Preparing FD curves and flow curves from initial and iteration simulations #
-    # -------------------------------------------------------------------------------------#
+    # ---------------------------------------------------------------------#
+    #   Step 3: Preparing FD curves from initial and iteration simulations #
+    # ---------------------------------------------------------------------#
     
-    projectPath = info['projectPath']
+
     logPath = info['logPath']
     resultPath = info['resultPath']
     simPath = info['simPath']
-    targetPath = info['targetPath']
     templatePath = info['templatePath'] 
-    material = info['material']
-    optimizerName = info['optimizerName']
-    paramConfig = info['paramConfig']
-    geometries = info['geometries']
-    deviationPercent = info['deviationPercent']
-    targetCurves = info['targetCurves']
 
-    grains = info['grains']
-    strainRates = info['strainRates']
+    objectives = info['objectives']
+    numberOfInitialSims = info['numberOfInitialSims']
+    maxConcurrentSimNumber = info['maxConcurrentSimNumber']
+    deleteSimOutputs = info['deleteSimOutputs']
 
     # Loading initial simulations
-    exampleGeometry = geometries[0]
+    exampleObjective = objectives[0]
 
-    initial_original_geom_to_param_FD_Curves_unsmooth = {}
-    initial_original_geom_to_param_FD_Curves_smooth = {}
-    initial_original_geom_to_param_flowCurves = {}
-    for geometry in geometries:
-        initial_original_geom_to_param_FD_Curves_unsmooth[geometry] = np.load(f"{resultPath}/{geometry}/initial/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist()
-        initial_original_geom_to_param_FD_Curves_smooth[geometry] = np.load(f"{resultPath}/{geometry}/initial/common/FD_Curves_smooth.npy", allow_pickle=True).tolist()
-        initial_original_geom_to_param_flowCurves[geometry] = np.load(f"{resultPath}/{geometry}/initial/common/flowCurves.npy", allow_pickle=True).tolist()
+    initial_objective_value_to_param_FD_Curves = {}
+
+    for objective in objectives:
+        initial_objective_value_to_param_FD_Curves[objective] = np.load(f"{resultPath}/{objective}/initial/common/FD_Curves.npy", allow_pickle=True).tolist()
     
-    iteration_original_geom_to_param_FD_Curves_smooth = {}
-    iteration_original_geom_to_param_FD_Curves_unsmooth = {}
-    iteration_original_geom_to_param_flowCurves = {}
+    iteration_objective_value_to_param_FD_Curves = {}
     
     # Check if there are any iteration simulations
-    if not os.path.exists(f"{resultPath}/{exampleGeometry}/iteration/common/FD_Curves_unsmooth.npy"):
+    if not os.path.exists(f"{resultPath}/{exampleObjective}/iteration/common/FD_Curves.npy"):
         printLog("There are no iteration simulations. Program starts running the iteration simulations", logPath)
-        for geometry in geometries:
-            iteration_original_geom_to_param_FD_Curves_smooth[geometry] = {}
-            iteration_original_geom_to_param_FD_Curves_unsmooth[geometry] = {}
-            iteration_original_geom_to_param_flowCurves[geometry] = {}
+        for objective in objectives:
+            iteration_objective_value_to_param_FD_Curves[objective] = {}
     else:
         printLog("Iteration simulations exist", logPath)
-        numberOfIterationSims = len(np.load(f"{resultPath}/{exampleGeometry}/iteration/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist())
+        numberOfIterationSims = len(np.load(f"{resultPath}/{exampleObjective}/iteration/common/FD_Curves.npy", allow_pickle=True).tolist())
         printLog(f"Number of iteration simulations: {numberOfIterationSims} FD curves", logPath)
-        for geometry in geometries:
-            iteration_original_geom_to_param_FD_Curves_smooth[geometry] = np.load(f"{resultPath}/{geometry}/iteration/common/FD_Curves_smooth.npy", allow_pickle=True).tolist()
-            iteration_original_geom_to_param_FD_Curves_unsmooth[geometry] = np.load(f"{resultPath}/{geometry}/iteration/common/FD_Curves_unsmooth.npy", allow_pickle=True).tolist()
-            iteration_original_geom_to_param_flowCurves[geometry] = np.load(f"{resultPath}/{geometry}/iteration/common/flowCurves.npy", allow_pickle=True).tolist()
-    
-    #print(initial_original_geom_to_param_FD_Curves_unsmooth)
-    combined_original_geom_to_param_FD_Curves_smooth = copy.deepcopy(initial_original_geom_to_param_FD_Curves_smooth)
-    combined_original_geom_to_param_flowCurves = copy.deepcopy(initial_original_geom_to_param_flowCurves)
-    
-    for geometry in geometries:
-        combined_original_geom_to_param_FD_Curves_smooth[geometry].update(iteration_original_geom_to_param_FD_Curves_smooth[geometry])
-        combined_original_geom_to_param_flowCurves[geometry].update(iteration_original_geom_to_param_flowCurves[geometry])
-    
-    
-    initial_interpolated_geom_to_param_FD_Curves_smooth = {}
-    iteration_interpolated_geom_to_param_FD_Curves_smooth = {}
-    combined_interpolated_geom_to_param_FD_Curves_smooth = {}
+        for objective in objectives:
+            iteration_objective_value_to_param_FD_Curves[objective] = np.load(f"{resultPath}/{objective}/iteration/common/FD_Curves.npy", allow_pickle=True).tolist()
 
-    for geometry in geometries:
-        initial_interpolated_geom_to_param_FD_Curves_smooth[geometry] = interpolating_FD_Curves(initial_original_geom_to_param_FD_Curves_smooth[geometry], targetCurves[geometry])
-        iteration_interpolated_geom_to_param_FD_Curves_smooth[geometry] = interpolating_FD_Curves(iteration_original_geom_to_param_FD_Curves_smooth[geometry], targetCurves[geometry])
-        combined_interpolated_geom_to_param_FD_Curves_smooth[geometry] = interpolating_FD_Curves(combined_original_geom_to_param_FD_Curves_smooth[geometry], targetCurves[geometry])
+    combined_objective_value_to_param_FD_Curves = copy.deepcopy(initial_objective_value_to_param_FD_Curves)
 
+    for objective in objectives:
+        combined_objective_value_to_param_FD_Curves[objective].update(iteration_objective_value_to_param_FD_Curves[objective])
+    
     FD_Curves_dict = {}
-    flowCurves_dict = {}
+    
+    FD_Curves_dict['initial_objective_value_to_param_FD_Curves'] = initial_objective_value_to_param_FD_Curves
+    FD_Curves_dict['iteration_objective_value_to_param_FD_Curves'] = iteration_objective_value_to_param_FD_Curves
+    FD_Curves_dict['combined_objective_value_to_param_FD_Curves'] = combined_objective_value_to_param_FD_Curves
 
-    FD_Curves_dict['initial_original_geom_to_param_FD_Curves_smooth'] = initial_original_geom_to_param_FD_Curves_smooth
-    FD_Curves_dict['iteration_original_geom_to_param_FD_Curves_smooth'] = iteration_original_geom_to_param_FD_Curves_smooth
-    FD_Curves_dict['combined_original_geom_to_param_FD_Curves_smooth'] = combined_original_geom_to_param_FD_Curves_smooth
-    FD_Curves_dict['initial_interpolated_geom_to_param_FD_Curves_smooth'] = initial_interpolated_geom_to_param_FD_Curves_smooth
-    FD_Curves_dict['iteration_interpolated_geom_to_param_FD_Curves_smooth'] = iteration_interpolated_geom_to_param_FD_Curves_smooth
-    FD_Curves_dict['combined_interpolated_geom_to_param_FD_Curves_smooth'] = combined_interpolated_geom_to_param_FD_Curves_smooth
-    
-    FD_Curves_dict['combined_interpolated_param_to_geom_FD_Curves_smooth'] = reverseAsParamsToGeometries(combined_interpolated_geom_to_param_FD_Curves_smooth, geometries)
-    FD_Curves_dict['iteration_original_param_to_geom_FD_Curves_smooth'] = reverseAsParamsToGeometries(iteration_original_geom_to_param_FD_Curves_smooth, geometries)
-    FD_Curves_dict['iteration_original_geom_to_param_FD_Curves_unsmooth'] = iteration_original_geom_to_param_FD_Curves_unsmooth
-    
-    flowCurves_dict['initial_original_geom_to_param_flowCurves'] = initial_original_geom_to_param_flowCurves
-    flowCurves_dict['iteration_original_geom_to_param_flowCurves'] = iteration_original_geom_to_param_flowCurves
-    flowCurves_dict['combined_original_geom_to_param_flowCurves'] = combined_original_geom_to_param_flowCurves
-    
-    #print("Hello")
-    #time.sleep(180)
-    return FD_Curves_dict, flowCurves_dict
+    FD_Curves_dict['combined_param_to_objective_value_FD_Curves'] = reverseAsParamsToObjectives(combined_objective_value_to_param_FD_Curves, objectives)
+    FD_Curves_dict['iteration_param_to_objective_value_FD_Curves'] = reverseAsParamsToObjectives(iteration_objective_value_to_param_FD_Curves, objectives)
+
+    # print("Hello")
+    # time.sleep(180)
+    return FD_Curves_dict
 
     

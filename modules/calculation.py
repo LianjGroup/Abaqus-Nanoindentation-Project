@@ -80,13 +80,13 @@ def rescale_paramsDict(paramsDict, paramConfig):
         rescaled_paramsDict[param] = value * paramConfig[param]['exponent']
     return rescaled_paramsDict
 
-def reverseAsParamsToGeometries(curves, geometries):
-    exampleGeometry = geometries[0]
+def reverseAsParamsToObjectives(curves, objectives):
+    exampleObjective = objectives[0]
     reverseCurves = {}
-    for paramsTuple in curves[exampleGeometry]:
+    for paramsTuple in curves[exampleObjective]:
         reverseCurves[paramsTuple] = {}
-        for geometry in geometries:
-            reverseCurves[paramsTuple][geometry] = curves[geometry][paramsTuple]
+        for objective in objectives:
+            reverseCurves[paramsTuple][objective] = curves[objective][paramsTuple]
     return reverseCurves
 
 def calculate_yielding_index(targetDisplacement, targetForce, r2_threshold=0.998):

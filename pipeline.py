@@ -11,8 +11,8 @@ from modules.stoploss import *
 import stage0_configs 
 import stage1_prepare_targetCurve
 import stage2_run_initialSims
-#import stage3_prepare_simCurves
-#import stage4_iterative_calibration
+import stage3_prepare_simCurves
+import stage4_iterative_calibration
 from math import *
 import json
 from datetime import datetime
@@ -36,24 +36,13 @@ def main_pipeline():
 
     stage2_run_initialSims.main_run_initialSims(info)
     
-    # FD_Curves_dict, flowCurves_dict = stage3_prepare_simCurves.main_prepare_simCurves(info) 
-    # info["initial_original_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['initial_original_geom_to_param_FD_Curves_smooth']
-    # info["iteration_original_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['iteration_original_geom_to_param_FD_Curves_smooth']
-    # info["combined_original_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['combined_original_geom_to_param_FD_Curves_smooth']
-    # info["initial_interpolated_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['initial_interpolated_geom_to_param_FD_Curves_smooth']
-    # info["iteration_interpolated_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['iteration_interpolated_geom_to_param_FD_Curves_smooth']
-    # info["combined_interpolated_geom_to_param_FD_Curves_smooth"] = FD_Curves_dict['combined_interpolated_geom_to_param_FD_Curves_smooth']
-    # info['iteration_original_geom_to_param_FD_Curves_unsmooth'] = FD_Curves_dict['iteration_original_geom_to_param_FD_Curves_unsmooth'] 
-    # info['combined_interpolated_param_to_geom_FD_Curves_smooth'] = FD_Curves_dict['combined_interpolated_param_to_geom_FD_Curves_smooth'] 
-    # info['iteration_original_param_to_geom_FD_Curves_smooth'] = FD_Curves_dict['iteration_original_param_to_geom_FD_Curves_smooth']
-    # info["initial_original_geom_to_param_flowCurves"] = flowCurves_dict['initial_original_geom_to_param_flowCurves']
-    # info["iteration_original_geom_to_param_flowCurves"] = flowCurves_dict['iteration_original_geom_to_param_flowCurves']
-    # info["combined_original_geom_to_param_flowCurves"] = flowCurves_dict['combined_original_geom_to_param_flowCurves']
+    FD_Curves_dict = stage3_prepare_simCurves.main_prepare_simCurves(info) 
+    info["FD_Curves_dict"] = FD_Curves_dict
     
-    # stage4_iterative_calibration.main_iterative_calibration(info)
+    stage4_iterative_calibration.main_iterative_calibration(info)
 
-    # printLog(f"The simulations have satisfied the {deviationPercent}% deviation stop condition", logPath)
-    # printLog("Parameter calibration has successfully completed", logPath)
+    printLog(f"The simulations have satisfied the {deviationPercent}% deviation stop condition", logPath)
+    printLog("Parameter calibration has successfully completed", logPath)
     
 
 if __name__ == "__main__":

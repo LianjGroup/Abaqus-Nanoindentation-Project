@@ -15,7 +15,7 @@ import json
 from datetime import datetime
 import os
 import prettytable
-
+from optimizers.optimize import *
 
 def main_iterative_calibration(info):
 
@@ -23,40 +23,19 @@ def main_iterative_calibration(info):
     #  Stage 4: Run iterative parameter calibration loop #
     # ---------------------------------------------------#
 
-    projectPath = info['projectPath']
+
     logPath = info['logPath']
     resultPath = info['resultPath']
-    simPath = info['simPath']
-    targetPath = info['targetPath']
-    templatePath = info['templatePath'] 
+
     material = info['material']
     optimizerName = info['optimizerName']
-    hardeningLaw = info['hardeningLaw']
     paramConfig = info['paramConfig']
-    geometries = info['geometries']
-    curveIndex = info['curveIndex']
     deviationPercent = info['deviationPercent']
-    numberOfInitialSims = info['numberOfInitialSims']
-    targetCurves = info['targetCurves']
-    yieldingIndices = info['yieldingIndices']
-    
-    # Continuous searching space
-    if optimizerName == "BO":
-        param_bounds = parseBoundsBO(info['paramConfig'])
 
-    initial_original_geom_to_param_FD_Curves_smooth = info['initial_original_geom_to_param_FD_Curves_smooth']
-    iteration_original_geom_to_param_FD_Curves_smooth = info['iteration_original_geom_to_param_FD_Curves_smooth']
-    combined_original_geom_to_param_FD_Curves_smooth = info['combined_original_geom_to_param_FD_Curves_smooth']
-    initial_interpolated_geom_to_param_FD_Curves_smooth = info['initial_interpolated_geom_to_param_FD_Curves_smooth']
-    iteration_interpolated_geom_to_param_FD_Curves_smooth = info['iteration_interpolated_geom_to_param_FD_Curves_smooth']
-    combined_interpolated_geom_to_param_FD_Curves_smooth = info['combined_interpolated_geom_to_param_FD_Curves_smooth']
-    combined_interpolated_param_to_geom_FD_Curves_smooth = info['combined_interpolated_param_to_geom_FD_Curves_smooth']
-    iteration_original_geom_to_param_FD_Curves_unsmooth = info['iteration_original_geom_to_param_FD_Curves_unsmooth']
-    iteration_original_param_to_geom_FD_Curves_smooth = info['iteration_original_param_to_geom_FD_Curves_smooth']
-    
-    initial_original_geom_to_param_flowCurves = info['initial_original_geom_to_param_flowCurves']
-    iteration_original_geom_to_param_flowCurves = info['iteration_original_geom_to_param_flowCurves']
-    combined_original_geom_to_param_flowCurves = info['combined_original_geom_to_param_flowCurves']
+    targetCurves = info['targetCurves']
+    objectives = info['objectives']
+    combined_objective_value_to_param_FD_Curves = info["FD_Curves_dict"]['combined_objective_value_to_param_FD_Curves']
+    iteration_objective_value_to_param_FD_Curves = info["FD_Curves_dict"]['iteration_objective_value_to_param_FD_Curves']
 
     sim = SIMULATION(info)
 
@@ -67,6 +46,10 @@ def main_iterative_calibration(info):
     # np.save("targetCurves.npy", targetCurves)
     # print("Hello")
     # time.sleep(180)
+    
+    classifiers = train_nonconverging_classifiers(combined_objective_value_to_param_FD_Curves, objectives)
+    time.sleep(180)
+    
     while not stopFD_MOO(targetCurves, list(combined_interpolated_param_to_geom_FD_Curves_smooth.values())[-1], geometries, yieldingIndices, deviationPercent):
 
         iterationIndex = len(iteration_original_param_to_geom_FD_Curves_smooth) + 1

@@ -41,11 +41,6 @@ def train_classifiers(nonconverging_combined_objective_value_to_param_FD_Curves,
 
     classifiers = {}
 
-    nonconverging_objectives_to_params = {}
-    
-    print("=====================================================")
-    print("Training classifiers for each objective: ")
-
     for objective in objectives:    
         converging_FD_Curves = nonconverging_combined_objective_value_to_param_FD_Curves[objective]
         nonconverging_FD_Curves = converging_combined_objective_value_to_param_FD_Curves[objective]
@@ -109,7 +104,15 @@ def train_linear_models(targetCenters,
             y.append(loss_value)
         y = np.array(y)
 
-        model = LinearRegression(fit_intercept=False).fit(X, y)
+        # Take log transformation, as prediction in the future could be negative
+        # When new prediction is negative, we can exponentiate it to get the positive value
+
+        # y_log = np.log(y + 0.00001) # Adding a small value to avoid log(0)
+        
+        #model = LinearRegression(fit_intercept=True).fit(X, y_log)
+        model = LinearRegression(fit_intercept=True).fit(X, y)
+        #y_pred_log = model.predict(X)
+        #y_pred = np.exp(y_pred_log)
         y_pred = model.predict(X)
         MSE = np.mean((y - y_pred) ** 2)
         print(f"RMSE for {objective}: {np.sqrt(MSE):.2f}")
@@ -120,11 +123,17 @@ def minimize_custom_loss_function(classifiers, regressionModels, paramConfig, ob
     bounds = np.array([(0, 1) for i in range(len(paramConfig))])
     x0 = np.array([0.5 for i in range(len(paramConfig))])
     res = minimize(custom_lossFD, x0, args=(classifiers, regressionModels, objectives), 
-                   bounds=bounds, method='Nelder-Mead',
-                   options={'disp': False, 'max_iter': 10000, 'tol':1e-6, 'x_tol':1e-9, })
+                   bounds=bounds, method='Powell', # Nelder-Mead
+                   options={'disp': False, 'maxiter': 1000000})
     scaled_X = res.x
     optimal_X = [de_minmax_scaler(scaled_X, paramConfig)]
-    return optimal_X
+
+    next_paramDict = {}
+    # print(optimal_X)
+    for i, paramName in enumerate(paramConfig):
+        next_paramDict[paramName] = optimal_X[0][i]
+
+    return next_paramDict
 
 def custom_lossFD(X, classifiers, regressionModels, objectives):
     objectiveLosses = []
@@ -132,17 +141,16 @@ def custom_lossFD(X, classifiers, regressionModels, objectives):
         classifierObjective = classifiers[objective]
         regressionModelObjective = regressionModels[objective]
         converging_prob, nonconverging_prob = classifierObjective.predict_proba(X.reshape(1, -1))[0]
-        #print(converging_prob, nonconverging_prob)
-        net_nonconverging = nonconverging_prob - converging_prob
-        shifted_netconverging = net_nonconverging + 1
-        # Now shifted_netconverging is in range [0, 2]
-        # We do this because we want the net_nonconverging to be positive
-        euclideanLoss = regressionModelObjective.predict(X.reshape(1, -1))
-        # We dont want the shifted_netconverging to be dominating the product
-        #print(euclideanLoss)
-        scaling_coeff = 3
-        objectiveLoss = scaling_coeff * shifted_netconverging + euclideanLoss
-        objectiveLosses.append(objectiveLoss)        
+        euclideanLoss = regressionModelObjective.predict(X.reshape(1, -1))        
+
+        if nonconverging_prob - converging_prob > 0.2:
+            objectiveLosses.append(1e12)
+        else:
+            if euclideanLoss[0] < 0:
+                objectiveLosses.append(1e12)
+            else: 
+                objectiveLosses.append(euclideanLoss[0])
+                
     return np.sum(objectiveLosses)
 
 # def BayesianLinearRegression(targetCenter, converging_FD_Curves):

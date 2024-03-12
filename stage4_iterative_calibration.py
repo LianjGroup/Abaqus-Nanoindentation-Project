@@ -61,16 +61,24 @@ def main_iterative_calibration(info):
     for objective in objectives:
         last_simCenters[objective] = list(converged_sim_centers[objective].values())[-1]
 
-    print("The last sim centers are: ", last_simCenters)
+    printLog("=====================================================", logPath)
+    for objective in objectives:
+        printLog(f"The last converged sim centers for {objective} are: ", logPath)
+        printLog(str(last_simCenters[objective]), logPath)
 
     # print("Hello")
     # time.sleep(180)
+    
+    printLog("=====================================================", logPath)
+    printLog(f"Training the classifiers for the objectives", logPath)
 
     classifiers = train_classifiers(nonconverging_combined_objective_value_to_param_FD_Curves, 
                                     converging_combined_objective_value_to_param_FD_Curves, 
                                     paramConfig,
                                     objectives)
     
+    printLog("=====================================================", logPath)
+    printLog(f"Training the regressors for the objectives", logPath)
     regressionModels = train_linear_models(targetCenters, 
                         converging_combined_objective_value_to_param_FD_Curves, 
                         paramConfig, 
@@ -82,8 +90,6 @@ def main_iterative_calibration(info):
                                                                      last_simCenters, 
                                                                      deviationPercent, 
                                                                      objectives)
-    print(targetCenters)
-    print(last_simCenters)
     while not stopAllObjectives:
         print("=====================================================")
         print("The satisfying objectives are")
@@ -101,15 +107,18 @@ def main_iterative_calibration(info):
         printLog(f"Running iteration {iterationIndex} for {optimizingInstance}" , logPath)
         printLog(f"The next predictd candidate parameters for simulation", logPath)
         printLog(f"=====================================================", logPath)
-        optimal_X = minimize_custom_loss_function(classifiers, 
+        
+        next_paramDict = minimize_custom_loss_function(classifiers, 
                                                   regressionModels, 
                                                   paramConfig,
                                                   objectives)
-        print(optimal_X)
-        time.sleep(180)
+
         prettyPrint(next_paramDict, paramConfig, logPath)
 
-        time.sleep(30)
+        #print(optimal_X)
+        time.sleep(180)
+
+
         printLog("Start running iteration simulation", logPath)
         
         geom_to_param_new_FD_Curves, geom_to_param_new_flowCurves = sim.run_iteration_simulations(next_paramDict, iterationIndex)

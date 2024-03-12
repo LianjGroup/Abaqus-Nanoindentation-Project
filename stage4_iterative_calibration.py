@@ -23,7 +23,6 @@ def main_iterative_calibration(info):
     #  Stage 4: Run iterative parameter calibration loop #
     # ---------------------------------------------------#
 
-
     logPath = info['logPath']
     resultPath = info['resultPath']
 
@@ -33,50 +32,81 @@ def main_iterative_calibration(info):
     deviationPercent = info['deviationPercent']
 
     targetCurves = info['targetCurves']
+    targetCenters = info['targetCenters']
     objectives = info['objectives']
+    paramConfig = info['paramConfig']
+    optimizingInstance = info['optimizingInstance']
+
     combined_objective_value_to_param_FD_Curves = info["FD_Curves_dict"]['combined_objective_value_to_param_FD_Curves']
     iteration_objective_value_to_param_FD_Curves = info["FD_Curves_dict"]['iteration_objective_value_to_param_FD_Curves']
-
     sim = SIMULATION(info)
 
-    #np.save("combined_interpolated_param_to_geom_FD_Curves_smooth.npy", combined_interpolated_param_to_geom_FD_Curves_smooth)
-    #print("Hello")
-    #time.sleep(180)
-
-    # np.save("targetCurves.npy", targetCurves)
     # print("Hello")
     # time.sleep(180)
     
-    classifiers = train_nonconverging_classifiers(combined_objective_value_to_param_FD_Curves, objectives)
-    time.sleep(180)
+    nonconverging_combined_objective_value_to_param_FD_Curves = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
+    converging_combined_objective_value_to_param_FD_Curves = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
+
+    for objective in objectives:
+        nonconverging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective], nonconverging=True)
+        converging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective] , nonconverging=False)
+
+    converged_sim_centers = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
+    for objective in objectives:
+        for params, dispForce in combined_objective_value_to_param_FD_Curves[objective].items():
+            simCenter = find_sim_center(dispForce)
+            converged_sim_centers[objective][params] = simCenter
     
-    while not stopFD_MOO(targetCurves, list(combined_interpolated_param_to_geom_FD_Curves_smooth.values())[-1], geometries, yieldingIndices, deviationPercent):
+    last_simCenters = {}
+    for objective in objectives:
+        last_simCenters[objective] = list(converged_sim_centers[objective].values())[-1]
 
-        iterationIndex = len(iteration_original_param_to_geom_FD_Curves_smooth) + 1
-        exampleGeometry = geometries[0]
+    print("The last sim centers are: ", last_simCenters)
 
-        # Weighted single objective optimization strategy:
-        if optimizerName == "BO":
-            geometryWeights = MOO_calculate_geometries_weight(targetCurves, geometries)
-            printLog("The weights for the geometries are: ", logPath)
-            printLog(str(geometryWeights), logPath)
-            
+    # print("Hello")
+    # time.sleep(180)
 
-            MOO_write_BO_json_log(combined_interpolated_param_to_geom_FD_Curves_smooth, targetCurves, geometries, geometryWeights, yieldingIndices, paramConfig,iterationIndex)
-            BO_instance = BO(info)
-            BO_instance.initializeOptimizer(lossFunction=None, param_bounds=param_bounds, loadingProgress=True)
-            next_paramDict = BO_instance.suggest()
-            next_paramDict = rescale_paramsDict(next_paramDict, paramConfig)
-            
-        if optimizerName == "BOTORCH":
-            pareto_front = MOO_suggest_BOTORCH(combined_interpolated_param_to_geom_FD_Curves_smooth, targetCurves, geometries, yieldingIndices, paramConfig,iterationIndex)
-            # Select a random point from the pareto front
-            next_paramDict = pareto_front[0]
+    classifiers = train_classifiers(nonconverging_combined_objective_value_to_param_FD_Curves, 
+                                    converging_combined_objective_value_to_param_FD_Curves, 
+                                    paramConfig,
+                                    objectives)
+    
+    regressionModels = train_linear_models(targetCenters, 
+                        converging_combined_objective_value_to_param_FD_Curves, 
+                        paramConfig, 
+                        objectives)
 
-        #print(len(iteration_interpolated_FD_Curves_smooth))
+        #printLog(f"The weights for the {objective} are: ", logPath)
+        
+    stopAllObjectives, stopAllObjectivesCheckObjectives = stopFD_MOO(targetCenters, 
+                                                                     last_simCenters, 
+                                                                     deviationPercent, 
+                                                                     objectives)
+    print(targetCenters)
+    print(last_simCenters)
+    while not stopAllObjectives:
+        print("=====================================================")
+        print("The satisfying objectives are")
+        for objective in objectives:
+            X_deviation = abs(targetCenters[objective]['X'] - last_simCenters[objective]['X']) / targetCenters[objective]['X'] * 100
+            Y_deviation = abs(targetCenters[objective]['Y'] - last_simCenters[objective]['Y']) / targetCenters[objective]['Y'] * 100
+            print(f"{objective}: {stopAllObjectivesCheckObjectives[objective]}")
+            print(f"X deviation: {X_deviation:.4f}%, Y deviation: {Y_deviation:.4f}%")
+        # print("Hello")  
+        # time.sleep(180)  
+        exampleObjective = objectives[0]
+        iterationIndex = len(iteration_objective_value_to_param_FD_Curves[exampleObjective]) + 1
+
         printLog("\n" + 60 * "#" + "\n", logPath)
-        printLog(f"Running iteration {iterationIndex} for {material}_{hardeningLaw}_curve{curveIndex}" , logPath)
-        printLog(f"The next candidate {hardeningLaw} parameters predicted by {optimizerName}", logPath)
+        printLog(f"Running iteration {iterationIndex} for {optimizingInstance}" , logPath)
+        printLog(f"The next predictd candidate parameters for simulation", logPath)
+        printLog(f"=====================================================", logPath)
+        optimal_X = minimize_custom_loss_function(classifiers, 
+                                                  regressionModels, 
+                                                  paramConfig,
+                                                  objectives)
+        print(optimal_X)
+        time.sleep(180)
         prettyPrint(next_paramDict, paramConfig, logPath)
 
         time.sleep(30)
@@ -86,50 +116,48 @@ def main_iterative_calibration(info):
         
         geom_to_param_new_FD_Curves_unsmooth = copy.deepcopy(geom_to_param_new_FD_Curves)
         geom_to_param_new_FD_Curves_smooth = copy.deepcopy(geom_to_param_new_FD_Curves)
-        new_param = list(geom_to_param_new_FD_Curves[exampleGeometry].keys())[0]
+        new_param = list(geom_to_param_new_FD_Curves[exampleobjective].keys())[0]
         
-        for geometry in geometries:
-            geom_to_param_new_FD_Curves_smooth[geometry][new_param]['force'] = smoothing_force(geom_to_param_new_FD_Curves_unsmooth[geometry][new_param]['force'], startIndex=20, endIndex=90, iter=20000)
+        for objective in objectives:
+            geom_to_param_new_FD_Curves_smooth[objective][new_param]['force'] = smoothing_force(geom_to_param_new_FD_Curves_unsmooth[objective][new_param]['force'], startIndex=20, endIndex=90, iter=20000)
         
         # Updating the combined FD curves smooth
-        for geometry in geometries:
-            combined_original_geom_to_param_FD_Curves_smooth[geometry].update(geom_to_param_new_FD_Curves_smooth[geometry])
-            combined_interpolated_geom_to_param_FD_Curves_smooth[geometry] = interpolating_FD_Curves(combined_original_geom_to_param_FD_Curves_smooth[geometry], targetCurves[geometry])
+        for objective in objectives:
+            combined_original_geom_to_param_FD_Curves_smooth[objective].update(geom_to_param_new_FD_Curves_smooth[objective])
+            combined_interpolated_geom_to_param_FD_Curves_smooth[objective] = interpolating_FD_Curves(combined_original_geom_to_param_FD_Curves_smooth[objective], targetCurves[objective])
         
         # Updating the iteration FD curves smooth
-        for geometry in geometries:
-            iteration_original_geom_to_param_FD_Curves_smooth[geometry].update(geom_to_param_new_FD_Curves_smooth[geometry])
-            iteration_interpolated_geom_to_param_FD_Curves_smooth[geometry] = interpolating_FD_Curves(iteration_original_geom_to_param_FD_Curves_smooth[geometry], targetCurves[geometry])
+        for objective in objectives:
+            iteration_original_geom_to_param_FD_Curves_smooth[objective].update(geom_to_param_new_FD_Curves_smooth[objective])
+            iteration_interpolated_geom_to_param_FD_Curves_smooth[objective] = interpolating_FD_Curves(iteration_original_geom_to_param_FD_Curves_smooth[objective], targetCurves[objective])
         
         # Updating the iteration FD curves unsmooth
-        for geometry in geometries:
-            iteration_original_geom_to_param_FD_Curves_unsmooth[geometry].update(geom_to_param_new_FD_Curves_unsmooth[geometry])
+        for objective in objectives:
+            iteration_original_geom_to_param_FD_Curves_unsmooth[objective].update(geom_to_param_new_FD_Curves_unsmooth[objective])
         
         # Updating the original flow curves
-        for geometry in geometries:
-            combined_original_geom_to_param_flowCurves[geometry].update(geom_to_param_new_flowCurves[geometry])
-            iteration_original_geom_to_param_flowCurves[geometry].update(geom_to_param_new_flowCurves[geometry])
+        for objective in objectives:
+            combined_original_geom_to_param_flowCurves[objective].update(geom_to_param_new_flowCurves[objective])
+            iteration_original_geom_to_param_flowCurves[objective].update(geom_to_param_new_flowCurves[objective])
         
         # Updating the param_to_geom data
-        combined_interpolated_param_to_geom_FD_Curves_smooth = reverseAsParamsToGeometries(combined_interpolated_geom_to_param_FD_Curves_smooth, geometries)
-        iteration_original_param_to_geom_FD_Curves_smooth = reverseAsParamsToGeometries(iteration_original_geom_to_param_FD_Curves_smooth, geometries)
+        combined_interpolated_param_to_geom_FD_Curves_smooth = reverseAsParamsToobjectives(combined_interpolated_geom_to_param_FD_Curves_smooth, objectives)
+        iteration_original_param_to_geom_FD_Curves_smooth = reverseAsParamsToobjectives(iteration_original_geom_to_param_FD_Curves_smooth, objectives)
 
         loss_newIteration = {}
-        for geometry in geometries:
-            yieldingIndex = yieldingIndices[geometry]
+        for objective in objectives:
+            yieldingIndex = yieldingIndices[objective]
             
-            simForce = list(iteration_interpolated_geom_to_param_FD_Curves_smooth[geometry].values())[-1]['force'][yieldingIndex:]
-            simDisplacement = list(iteration_interpolated_geom_to_param_FD_Curves_smooth[geometry].values())[-1]['displacement'][yieldingIndex:]
-            targetForce = targetCurves[geometry]['force'][yieldingIndex:]
-            targetDisplacement = targetCurves[geometry]['displacement'][yieldingIndex:]
+            simForce = list(iteration_interpolated_geom_to_param_FD_Curves_smooth[objective].values())[-1]['force'][yieldingIndex:]
+            simDisplacement = list(iteration_interpolated_geom_to_param_FD_Curves_smooth[objective].values())[-1]['displacement'][yieldingIndex:]
+            targetForce = targetCurves[objective]['force'][yieldingIndex:]
+            targetDisplacement = targetCurves[objective]['displacement'][yieldingIndex:]
             interpolated_simForce = interpolatingForce(simDisplacement, simForce, targetDisplacement)
-            loss_newIteration[geometry] = round(lossFD(targetDisplacement, targetForce, interpolated_simForce,iterationIndex), 3)
+            loss_newIteration[objective] = round(lossFD(targetDisplacement, targetForce, interpolated_simForce,iterationIndex), 3)
         
         printLog(f"The loss of the new iteration is: ", logPath)
         printLog(str(loss_newIteration), logPath)
 
         # Saving the iteration data
-        for geometry in geometries:
-            np.save(f"{resultPath}/{geometry}/iteration/common/FD_Curves_unsmooth.npy", iteration_original_geom_to_param_FD_Curves_unsmooth[geometry])
-            np.save(f"{resultPath}/{geometry}/iteration/common/FD_Curves_smooth.npy", iteration_original_geom_to_param_FD_Curves_smooth[geometry])
-            np.save(f"{resultPath}/{geometry}/iteration/common/flowCurves.npy", iteration_original_geom_to_param_flowCurves[geometry])
+        for objective in objectives:
+            np.save(f"{resultPath}/{objective}/iteration/common/FD_Curves_unsmooth.npy", iteration_original_geom_to_param_FD_Curves_unsmooth[objective])

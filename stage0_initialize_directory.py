@@ -12,7 +12,7 @@ def checkCreate(path):
 def initialize_directory(material, CPLaw, grains, strainRates):
 
     # optimizing instance
-    optimizing_instance = f"{CPLaw}_{material}"
+    optimizingInstance = f"{CPLaw}_{material}"
 
     # list of objectives 
     objectives = []
@@ -21,11 +21,11 @@ def initialize_directory(material, CPLaw, grains, strainRates):
             objectives.append(f"grain_{grain}_sr_{strainRate}")
     
     # For paramInfo
-    path = f"paramInfo/{optimizing_instance}"
+    path = f"paramInfo/{optimizingInstance}"
     checkCreate(path)
     
     # For results 
-    path = f"results/{optimizing_instance}"
+    path = f"results/{optimizingInstance}"
     checkCreate(path)
     for objective in objectives:
         checkCreate(f"{path}/{objective}")
@@ -37,7 +37,7 @@ def initialize_directory(material, CPLaw, grains, strainRates):
         checkCreate(f"{path}/{objective}/iteration/common")
 
     # For simulations
-    path = f"simulations/{optimizing_instance}"
+    path = f"simulations/{optimizingInstance}"
     checkCreate(path)
     for objective in objectives:
         checkCreate(f"{path}/{objective}")
@@ -45,13 +45,13 @@ def initialize_directory(material, CPLaw, grains, strainRates):
         checkCreate(f"{path}/{objective}/iteration")
 
     # For targets
-    path = f"targets/{optimizing_instance}"
+    path = f"targets/{optimizingInstance}"
     checkCreate(path)
     for objective in objectives:
         checkCreate(f"{path}/{objective}")
 
     # For templates
-    path = f"templates/{optimizing_instance}"
+    path = f"templates/{optimizingInstance}"
     checkCreate(path)
     for objective in objectives:
         checkCreate(f"{path}/{objective}")
@@ -60,19 +60,19 @@ def initialize_directory(material, CPLaw, grains, strainRates):
     projectPath = os.getcwd()
     
     # The logging path
-    logPath = f"log/{optimizing_instance}.txt"
+    logPath = f"log/{optimizingInstance}.txt"
     # The paramInfo path
-    paramInfoPath = f"paramInfo/{optimizing_instance}"
+    paramInfoPath = f"paramInfo/{optimizingInstance}"
     # The results path
-    resultPath = f"results/{optimizing_instance}"
+    resultPath = f"results/{optimizingInstance}"
     # The simulations path
-    simPath = f"simulations/{optimizing_instance}"
+    simPath = f"simulations/{optimizingInstance}"
     # The target path
-    targetPath = f"targets/{optimizing_instance}"
+    targetPath = f"targets/{optimizingInstance}"
     # The templates path
-    templatePath = f"templates/{optimizing_instance}"
+    templatePath = f"templates/{optimizingInstance}"
 
-    return optimizing_instance, objectives, projectPath, logPath, paramInfoPath, resultPath, simPath, templatePath, targetPath
+    return optimizingInstance, objectives, projectPath, logPath, paramInfoPath, resultPath, simPath, templatePath, targetPath
 
 if __name__ == "__main__":
     globalConfig = pd.read_excel("configs/global_config.xlsx", nrows=1, engine="openpyxl")

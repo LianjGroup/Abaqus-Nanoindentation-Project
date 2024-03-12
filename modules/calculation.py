@@ -89,21 +89,68 @@ def reverseAsParamsToObjectives(curves, objectives):
             reverseCurves[paramsTuple][objective] = curves[objective][paramsTuple]
     return reverseCurves
 
-def calculate_yielding_index(targetDisplacement, targetForce, r2_threshold=0.998):
-    """
-    This function calculates the end of the elastic (linear) region of the force-displacement curve.
-    """
-    yielding_index = 0
+def filter_simulations(FD_Curves, nonconverging):
+    # Converting the unit
+    maxDispCorrespondingToMaxForce = -np.inf
 
-    # Initialize the Linear Regression model
-    linReg = LinearRegression()
-    targetDisplacement = np.array(targetDisplacement)
-    targetForce = np.array(targetForce)
-    for i in range(2, len(targetDisplacement)):
-        linReg.fit(targetDisplacement[:i].reshape(-1, 1), targetForce[:i]) 
-        simForce = linReg.predict(targetDisplacement[:i].reshape(-1, 1)) 
-        r2 = r2_score(targetForce[:i], simForce) 
-        if r2 < r2_threshold:  # If R^2 is below threshold, mark the end of linear region
-            yielding_index = i - 1
-            break
-    return yielding_index
+    for params, dispForce in FD_Curves.items():
+        disp = dispForce["displacement"]
+        force = dispForce["force"]
+        if maxDispCorrespondingToMaxForce < disp[np.argmax(force)]: 
+            maxDispCorrespondingToMaxForce = disp[np.argmax(force)]
+
+    # print(f"Max disp corresponding to max force: {maxDispCorrespondingToMaxForce}")
+    
+    FD_Curves_copy = copy.deepcopy(FD_Curves)
+    
+    for i, (params, dispForce) in enumerate(FD_Curves.items()):  
+        disp = dispForce["displacement"]
+        force = dispForce["force"]
+        dispCorrespondingToMaxForce = disp[np.argmax(force)]
+
+        if nonconverging == True:
+            if not dispCorrespondingToMaxForce < maxDispCorrespondingToMaxForce - 2:
+                del FD_Curves_copy[params]
+                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (converging)")
+            #else:
+                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (nonconverging)")
+        else:
+            if dispCorrespondingToMaxForce < maxDispCorrespondingToMaxForce - 2:
+                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (nonconverging)")
+                del FD_Curves_copy[params] 
+            #else:
+                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (converging)")
+    return FD_Curves_copy    
+
+def find_sim_center(dispForce):
+    disp = dispForce["displacement"]
+    force = dispForce["force"]
+    # Find N largest values of force
+    N = 20
+    maxForce_N = np.partition(force, -N)[-N:]
+    maxDispCorresponding_N = disp[np.argpartition(force, -N)[-N:]] 
+    #maxForce = np.max(force)
+    #maxDispCorresponding = disp[np.argmax(force)]
+    maxForce = np.mean(maxForce_N)
+    maxDispCorresponding = np.mean(maxDispCorresponding_N)
+    simCenter = {"X": maxDispCorresponding, "Y": maxForce}
+    return simCenter
+
+def minmax_scaler(paramsTuple, paramConfig):
+    scaledParams = []
+    for paramName, paramValue in paramsTuple:
+        paramMin = paramConfig[paramName]["iteration_lowerBound"]	
+        paramMax = paramConfig[paramName]["iteration_upperBound"]
+        scaledParam = (paramValue - paramMin) / (paramMax - paramMin)
+        scaledParams.append(scaledParam)
+    return scaledParams
+
+def de_minmax_scaler(scaledParams, paramConfig):
+    params = []
+    for i, scaledParam in enumerate(scaledParams):
+        paramName = list(paramConfig.keys())[i]
+        paramMin = paramConfig[paramName]["iteration_lowerBound"]	
+        paramMax = paramConfig[paramName]["iteration_upperBound"]
+        param = scaledParam * (paramMax - paramMin) + paramMin
+        params.append(param)
+    return params

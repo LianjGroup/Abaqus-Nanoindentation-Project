@@ -60,14 +60,27 @@ def main_prepare_simCurves(info):
     for objective in objectives:
         combined_objective_value_to_param_FD_Curves[objective].update(iteration_objective_value_to_param_FD_Curves[objective])
     
+    # Converting units for the FD curves
+    # Displacement is in nanometers and force is in micro Newtons in experiment
+    # while simulation returns measurements in meters and Newtons (very small number)
+    for objective in objectives:
+        for paramsTuple, dispForce in initial_objective_value_to_param_FD_Curves[objective].items():
+            initial_objective_value_to_param_FD_Curves[objective][paramsTuple]["displacement"] *= 1e9
+            initial_objective_value_to_param_FD_Curves[objective][paramsTuple]["force"] *= 1e6
+        
+        for paramsTuple, dispForce in iteration_objective_value_to_param_FD_Curves[objective].items():
+            iteration_objective_value_to_param_FD_Curves[objective][paramsTuple]["displacement"] *= 1e9
+            iteration_objective_value_to_param_FD_Curves[objective][paramsTuple]["force"] *= 1e6
+        
+        for paramsTuple, dispForce in combined_objective_value_to_param_FD_Curves[objective].items():
+            combined_objective_value_to_param_FD_Curves[objective][paramsTuple]["displacement"] *= 1e9
+            combined_objective_value_to_param_FD_Curves[objective][paramsTuple]["force"] *= 1e6
+    
     FD_Curves_dict = {}
     
     FD_Curves_dict['initial_objective_value_to_param_FD_Curves'] = initial_objective_value_to_param_FD_Curves
     FD_Curves_dict['iteration_objective_value_to_param_FD_Curves'] = iteration_objective_value_to_param_FD_Curves
     FD_Curves_dict['combined_objective_value_to_param_FD_Curves'] = combined_objective_value_to_param_FD_Curves
-
-    FD_Curves_dict['combined_param_to_objective_value_FD_Curves'] = reverseAsParamsToObjectives(combined_objective_value_to_param_FD_Curves, objectives)
-    FD_Curves_dict['iteration_param_to_objective_value_FD_Curves'] = reverseAsParamsToObjectives(iteration_objective_value_to_param_FD_Curves, objectives)
 
     # print("Hello")
     # time.sleep(180)

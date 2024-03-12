@@ -5,6 +5,7 @@ import pandas as pd
 from scipy.interpolate import interp1d
 from datetime import datetime
 from modules.stoploss import *
+from modules.calculation import *
 import time
 
 import torch
@@ -27,56 +28,161 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-def train_nonconverging_classifiers(combined_objective_value_to_param_FD_Curves, objectives):
-    
-    nonconverging_objectives_to_params = {}
-    
-    for objective in objectives:    
-        nonconverging_objectives_to_params[objective] = {}
-        nonconverging_objectives_to_params[objective]["paramFeatures"] = []
-        nonconverging_objectives_to_params[objective]["nonconvergingLabels"] = []
-        
-        for params, dispForce in combined_objective_value_to_param_FD_Curves[objective].items():
-            paramsList = [paramValue for paramName, paramValue in params]
-            nonconverging_objectives_to_params[objective]["paramFeatures"].append(paramsList)
-            
-            force = dispForce["force"]
-            if len(force) < 1000:
-                nonconverging_objectives_to_params[objective]["nonconvergingLabels"].append(1)
-            else: 
-                nonconverging_objectives_to_params[objective]["nonconvergingLabels"].append(0)
+from scipy.optimize import minimize
 
-    # Convert to numpy 
 
-    for objective in objectives:
-        nonconverging_objectives_to_params[objective]["paramFeatures"] = np.array(nonconverging_objectives_to_params[objective]["paramFeatures"])
-        nonconverging_objectives_to_params[objective]["nonconvergingLabels"] = np.array(nonconverging_objectives_to_params[objective]["nonconvergingLabels"])        
-        # print(nonconverging_objectives_to_params[objective]["paramFeatures"].shape)
-        # print(nonconverging_objectives_to_params[objective]["nonconvergingLabels"].shape)
+
+def train_classifiers(nonconverging_combined_objective_value_to_param_FD_Curves, 
+                      converging_combined_objective_value_to_param_FD_Curves, 
+                      paramConfig,
+                      objectives):
 
     np.random.seed(42) # For reproducibility
 
     classifiers = {}
 
-    for objective in objectives:
-        X = nonconverging_objectives_to_params[objective]["paramFeatures"]  # Features
-        y = nonconverging_objectives_to_params[objective]["nonconvergingLabels"]  # Labels
+    nonconverging_objectives_to_params = {}
+    
+    print("=====================================================")
+    print("Training classifiers for each objective: ")
+
+    for objective in objectives:    
+        converging_FD_Curves = nonconverging_combined_objective_value_to_param_FD_Curves[objective]
+        nonconverging_FD_Curves = converging_combined_objective_value_to_param_FD_Curves[objective]
+        
+        convergingLabels = [0 for i in range (len(converging_FD_Curves))]
+        nonconvergingLabels = [1 for i in range (len(nonconverging_FD_Curves))]
+
+        Y = np.array(convergingLabels + nonconvergingLabels)
+
+        #convergingFeatures = [[paramValue for paramName, paramValue in paramTuples] for paramTuples in converging_FD_Curves.keys()]
+        #nonconvergingFeatures = [[paramValue for paramName, paramValue in paramTuples] for paramTuples in nonconverging_FD_Curves.keys()]
+        
+        convergingFeatures = [minmax_scaler(paramTuples, paramConfig) for paramTuples in converging_FD_Curves.keys()]
+        nonconvergingFeatures = [minmax_scaler(paramTuples, paramConfig) for paramTuples in nonconverging_FD_Curves.keys()]
+
+        X = np.array(convergingFeatures + nonconvergingFeatures)
 
         # Creating the SVM classifier
-        clf = SVC(C=1.0, kernel='linear')  # Using a linear kernel
+        clf = SVC(C=1.0, kernel='linear', probability=True)  # Using a linear kernel
 
         # Training the classifier
-        clf.fit(X, y)
+        clf.fit(X, Y)
 
         # Making predictions
         y_pred = clf.predict(X)
         
         classifiers[objective] = clf
         # Evaluating the classifier
-        accuracy = accuracy_score(y, y_pred)
-
-        print(f"Accuracy for {objective}: {accuracy*100:.2f}%")
+        accuracy = accuracy_score(Y, y_pred)
+        # predict probabilities
+        #y_pred_prob = clf.predict_proba(X)
+        #print(y_pred_prob)
+        print(f"Classifying accuracy for {objective}: {accuracy*100:.2f}%")
 
     # print("Hello")
     # time.sleep(180)
     return classifiers
+
+def train_linear_models(targetCenters, 
+                        converging_combined_objective_value_to_param_FD_Curves, 
+                        paramConfig, 
+                        objectives):
+    linearModels = {}
+    for objective in objectives:
+        targetCenter = targetCenters[objective]
+        converging_FD_Curves = converging_combined_objective_value_to_param_FD_Curves[objective]
+        #X = np.array([[paramValue for paramName, paramValue in paramTuples] for paramTuples in converging_FD_Curves.keys()])
+        #print(X)
+        X = np.array([minmax_scaler(paramTuples, paramConfig) for paramTuples in converging_FD_Curves.keys()])
+        # print(X)
+        y = []
+        for dispForce in converging_FD_Curves.values():
+            simCenter = find_sim_center(dispForce)
+            loss_value = lossFD_SOO(targetCenter, simCenter)
+            # if loss_value < 0:
+            #     print("Loss value is negative")
+            #     print(targetCenter)
+            #     print(simCenter)
+            #     print(loss_value)
+            #     print("=====================================================")
+            y.append(loss_value)
+        y = np.array(y)
+
+        model = LinearRegression(fit_intercept=False).fit(X, y)
+        y_pred = model.predict(X)
+        MSE = np.mean((y - y_pred) ** 2)
+        print(f"RMSE for {objective}: {np.sqrt(MSE):.2f}")
+        linearModels[objective] = model
+    return linearModels
+
+def minimize_custom_loss_function(classifiers, regressionModels, paramConfig, objectives):
+    bounds = np.array([(0, 1) for i in range(len(paramConfig))])
+    x0 = np.array([0.5 for i in range(len(paramConfig))])
+    res = minimize(custom_lossFD, x0, args=(classifiers, regressionModels, objectives), 
+                   bounds=bounds, method='Nelder-Mead',
+                   options={'disp': False, 'max_iter': 10000, 'tol':1e-6, 'x_tol':1e-9, })
+    scaled_X = res.x
+    optimal_X = [de_minmax_scaler(scaled_X, paramConfig)]
+    return optimal_X
+
+def custom_lossFD(X, classifiers, regressionModels, objectives):
+    objectiveLosses = []
+    for objective in objectives:
+        classifierObjective = classifiers[objective]
+        regressionModelObjective = regressionModels[objective]
+        converging_prob, nonconverging_prob = classifierObjective.predict_proba(X.reshape(1, -1))[0]
+        #print(converging_prob, nonconverging_prob)
+        net_nonconverging = nonconverging_prob - converging_prob
+        shifted_netconverging = net_nonconverging + 1
+        # Now shifted_netconverging is in range [0, 2]
+        # We do this because we want the net_nonconverging to be positive
+        euclideanLoss = regressionModelObjective.predict(X.reshape(1, -1))
+        # We dont want the shifted_netconverging to be dominating the product
+        #print(euclideanLoss)
+        scaling_coeff = 3
+        objectiveLoss = scaling_coeff * shifted_netconverging + euclideanLoss
+        objectiveLosses.append(objectiveLoss)        
+    return np.sum(objectiveLosses)
+
+# def BayesianLinearRegression(targetCenter, converging_FD_Curves):
+#     X = np.array([[paramValue for paramName, paramValue in paramTuples] for paramTuples in converging_FD_Curves.keys()])
+#     # print(X)
+#     # Standardize X
+#     scaler = StandardScaler()
+#     X = scaler.fit_transform(X)
+    
+#     y = []
+#     for dispForce in converging_FD_Curves.values():
+#         disp = dispForce["displacement"]
+#         force = dispForce["force"]
+#         maxForce = np.max(force)
+#         maxDispCorresponding = disp[np.argmax(force)]
+#         simCenter = {"X": maxDispCorresponding, "Y": maxForce}
+#         loss_value = lossFD_SOO(targetCenter, simCenter)
+#         y.append(loss_value)
+#     y = np.array(y)
+
+#     # Fit the model
+#     # Assume y = Xw + epsilon, where w ~ N(m, S) and epsilon ~ N(0, sigma^2 I)
+#     # We can use frequentist linear regression to obtain the unknown values above
+
+#     # Fit the model
+#     model = LinearRegression(fit_intercept=False).fit(X, y)
+#     y_pred = model.predict(X)
+#     # The residuals 
+#     residuals = y - y_pred
+#     # The std of the residuals
+#     sigma_epsilon_prior = np.std(residuals)
+#     # Now, the mean of the weights is
+#     mu_w_prior = model.coef_
+#     sigma_w_prior = np.eye(X.shape[1]) * 0.1
+    
+#     # P(w | y) = N(w | mu_post, SIGMA_post)
+    
+#     sigma_w_post = np.linalg.inv(1/(sigma_epsilon_prior ** 2) * X.T @ X + np.linalg.inv(sigma_w_prior))
+#     mu_w_post = sigma_w_post @ (1/(sigma_epsilon_prior ** 2) * X.T @ y + np.linalg.inv(sigma_w_prior) @ mu_w_prior)
+    
+#     print("Frequentist linear regression weights: ", model.coef_)
+#     print("Bayesian linear regression weights: ", mu_w_post)
+#     return mu_w_post

@@ -51,7 +51,7 @@ def main_config():
     strainRates = strainRates.split(";")
 
     (
-        optimizing_instance,
+        optimizingInstance,
         objectives,
         projectPath, 
         logPath, 
@@ -93,7 +93,7 @@ def main_config():
         'CPLaw': CPLaw,
         'grains': grains,
         'objectives': objectives,
-        'optimizing_instance': optimizing_instance,
+        'optimizingInstance': optimizingInstance,
         'strainRates': strainRates,
         'optimizerName': optimizerName,
         'paramConfig': paramConfig,

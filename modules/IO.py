@@ -41,7 +41,7 @@ def read_FD_Curve(filePath):
     force = df.iloc[:, 2].to_numpy()
     return displacement, force
 
-def create_parameter_file(filePath, paramsDict):
+def create_parameters_file(filePath, paramsDict):
     columns = ["Parameter", "Value"]
     df = pd.DataFrame(columns=columns)
     for key, value in paramsDict.items():
@@ -58,7 +58,7 @@ def create_FD_Curve_file(filePath, displacement, force):
     df.to_excel(f"{filePath}/FD_Curve.xlsx", index=False)
     df.to_csv(f"{filePath}/FD_Curve.csv", index=False)
 
-def replace_parameters_geometry_inp(filePath, paramsDict, CPLaw):
+def replace_parameters_into_inp(filePath, paramsDict, CPLaw):
     if CPLaw == 'PH':
         with open(filePath, 'r') as geometry_inp:
             geometry_inp_content = geometry_inp.readlines()

@@ -3927,3 +3927,1093 @@ The next predicted candidate parameters for simulation
 |   tausat  | 369.9959143650991 MPa |
 +-----------+-----------------------+
 
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+------------------------+
+| Parameter |         Value          |
++-----------+------------------------+
+|    tau0   | 207.95346284917025 MPa |
+|     a     |   1.3004807388105228   |
+|     h0    | 4500.061284523513 MPa  |
+|   tausat  | 370.00408563490083 MPa |
++-----------+------------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+------------------------+
+| Parameter |         Value          |
++-----------+------------------------+
+|    tau0   | 207.95346284917025 MPa |
+|     a     |   1.3004807388105228   |
+|     h0    | 4500.061284523513 MPa  |
+|   tausat  | 370.00408563490083 MPa |
++-----------+------------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+{'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+{'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+{'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+The last simultaneously converged sim centers for grain_1441_sr_0p1 are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+The last simultaneously converged sim centers for grain_2744_sr_0p1 are: 
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+The last simultaneously converged sim centers for grain_3198_sr_0p1 are: 
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+
+Start running iteration simulation
+Iteration simulation preprocessing stage starts
+Number of jobs required: 3
+Iteration simulation postprocessing stage finished
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+------------------------+
+| Parameter |         Value          |
++-----------+------------------------+
+|    tau0   | 201.0273568977682 MPa  |
+|     a     |   0.500105771138163    |
+|     h0    | 3000.1983208840556 MPa |
+|   tausat  |  380.615114768009 MPa  |
++-----------+------------------------+
+
+Start running iteration simulation
+Iteration simulation preprocessing stage starts
+Number of jobs required: 3
+Iteration simulation postprocessing stage finished
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+There are no iteration simulations. Program starts running the iteration simulations
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 1 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+-----------------------+
+| Parameter |         Value         |
++-----------+-----------------------+
+|    tau0   | 247.2573453116699 MPa |
+|     a     |   0.5000644746287618  |
+|     h0    |  3598.79934514589 MPa |
+|   tausat  | 369.9959143650991 MPa |
++-----------+-----------------------+
+

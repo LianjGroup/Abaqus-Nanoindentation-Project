@@ -182,8 +182,8 @@ class SIMULATION():
             if os.path.exists(f"{simPath}/{objective}/iteration/{iterationIndex}"):
                 shutil.rmtree(f"{simPath}/{objective}/iteration/{iterationIndex}")
             shutil.copytree(f"{templatePath}/{objective}", f"{simPath}/{objective}/iteration/{iterationIndex}")
-            replace_parameters_into_inp(f"{simPath}/iteration/{iterationIndex}/geometry.inp", paramsDict, CPLaw)
-            create_parameters_file(f"{simPath}/iteration/{iterationIndex}", paramsDict)
+            replace_parameters_into_inp(f"{simPath}/{objective}/iteration/{iterationIndex}/geometry.inp", paramsDict, CPLaw)
+            create_parameters_file(f"{simPath}/{objective}/iteration/{iterationIndex}", paramsDict)
 
     def write_paths_iteration(self, iterationIndex):
         projectPath = self.info['projectPath']
@@ -223,10 +223,11 @@ class SIMULATION():
             displacement, force = read_FD_Curve(f"{simPath}/{objective}/iteration/{iterationIndex}/FD_Curve.txt")
             create_FD_Curve_file(f"{resultPath}/{objective}/iteration/data/{iterationIndex}", displacement, force)
 
+            # This part already does unit conversion, no need to be done in the iterative calibration outer loop
             objective_value_to_param_new_FD_Curves[objective] = {}
             objective_value_to_param_new_FD_Curves[objective][paramsTuple] = {}
-            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['displacement'] = displacement
-            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['force'] = force
+            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['displacement'] = displacement * 1e9
+            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['force'] = force * 1e6
             
         printLog("Saving successfully iteration simulation results", logPath)
         return objective_value_to_param_new_FD_Curves

@@ -26,12 +26,9 @@ def main_iterative_calibration(info):
     logPath = info['logPath']
     resultPath = info['resultPath']
 
-    material = info['material']
-    optimizerName = info['optimizerName']
     paramConfig = info['paramConfig']
     deviationPercent = info['deviationPercent']
 
-    targetCurves = info['targetCurves']
     targetCenters = info['targetCenters']
     objectives = info['objectives']
     paramConfig = info['paramConfig']
@@ -39,21 +36,19 @@ def main_iterative_calibration(info):
 
     combined_objective_value_to_param_FD_Curves = info["FD_Curves_dict"]['combined_objective_value_to_param_FD_Curves']
     iteration_objective_value_to_param_FD_Curves = info["FD_Curves_dict"]['iteration_objective_value_to_param_FD_Curves']
-    
 
-    # print("Hello")
-    # time.sleep(180)
-    
     nonconverging_combined_objective_value_to_param_FD_Curves = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
     converging_combined_objective_value_to_param_FD_Curves = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
 
     for objective in objectives:
-        nonconverging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective], nonconverging=True)
-        converging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective] , nonconverging=False)
-
-    converged_sim_centers = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
+        nonconverging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective], nonconverging_filter=True)
+        converging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective] , nonconverging_filter=False)
+    
+    converging_simultaneously_combined_objective_value_to_param_FD_Curves = filter_simulations_simultaneous(combined_objective_value_to_param_FD_Curves, objectives, nonconverging_filter=False)
+    
+    converged_sim_centers = copy.deepcopy(converging_simultaneously_combined_objective_value_to_param_FD_Curves)
     for objective in objectives:
-        for params, dispForce in combined_objective_value_to_param_FD_Curves[objective].items():
+        for params, dispForce in converging_simultaneously_combined_objective_value_to_param_FD_Curves[objective].items():
             simCenter = find_sim_center(dispForce)
             converged_sim_centers[objective][params] = simCenter
     
@@ -62,12 +57,9 @@ def main_iterative_calibration(info):
         last_simCenters[objective] = list(converged_sim_centers[objective].values())[-1]
 
     printLog("=====================================================", logPath)
+    printLog(f"The last simultaneously converged sim centers for all objectives are: ", logPath)
     for objective in objectives:
-        printLog(f"The last converged sim centers for {objective} are: ", logPath)
-        printLog(str(last_simCenters[objective]), logPath)
-
-    # print("Hello")
-    # time.sleep(180)
+        printLog(f"{objective}: {str(last_simCenters[objective])}", logPath)
     
     printLog("=====================================================", logPath)
     printLog(f"Training the classifiers for the objectives", logPath)
@@ -99,8 +91,7 @@ def main_iterative_calibration(info):
             Y_deviation = abs(targetCenters[objective]['Y'] - last_simCenters[objective]['Y']) / targetCenters[objective]['Y'] * 100
             print(f"{objective}: {stopAllObjectivesCheckObjectives[objective]}")
             print(f"X deviation: {X_deviation:.4f}%, Y deviation: {Y_deviation:.4f}%")
-        # print("Hello")  
-        # time.sleep(180)  
+
         exampleObjective = objectives[0]
         iterationIndex = len(iteration_objective_value_to_param_FD_Curves[exampleObjective]) + 1
 
@@ -113,15 +104,14 @@ def main_iterative_calibration(info):
                                                   regressionModels, 
                                                   paramConfig,
                                                   objectives)
-
-        # next_paramsTuple = tuple(next_paramsDict.items())
        
         prettyPrint(next_paramsDict, paramConfig, logPath)
 
-        time.sleep(60)
+        time.sleep(30)
 
         printLog("Start running iteration simulation", logPath)
         
+        # Unit conversion is already done in postprocess_results_iteration
         objective_value_to_param_new_FD_Curves = sim.run_iteration_simulations(next_paramsDict, 
                                                                                iterationIndex)
         
@@ -153,12 +143,14 @@ def main_iterative_calibration(info):
         converging_combined_objective_value_to_param_FD_Curves = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
 
         for objective in objectives:
-            nonconverging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective], nonconverging=True)
-            converging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective] , nonconverging=False)
-
-        converged_sim_centers = copy.deepcopy(combined_objective_value_to_param_FD_Curves)
+            nonconverging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective], nonconverging_filter=True)
+            converging_combined_objective_value_to_param_FD_Curves[objective] = filter_simulations(combined_objective_value_to_param_FD_Curves[objective] , nonconverging_filter=False)
+        
+        converging_simultaneously_combined_objective_value_to_param_FD_Curves = filter_simulations_simultaneous(combined_objective_value_to_param_FD_Curves, objectives, nonconverging_filter=False)
+        
+        converged_sim_centers = copy.deepcopy(converging_simultaneously_combined_objective_value_to_param_FD_Curves)
         for objective in objectives:
-            for params, dispForce in combined_objective_value_to_param_FD_Curves[objective].items():
+            for params, dispForce in converging_simultaneously_combined_objective_value_to_param_FD_Curves[objective].items():
                 simCenter = find_sim_center(dispForce)
                 converged_sim_centers[objective][params] = simCenter
         
@@ -167,10 +159,10 @@ def main_iterative_calibration(info):
             last_simCenters[objective] = list(converged_sim_centers[objective].values())[-1]
 
         printLog("=====================================================", logPath)
+        printLog(f"The last simultaneously converged sim centers for all objectives are: ", logPath)
         for objective in objectives:
-            printLog(f"The last converged sim centers for {objective} are: ", logPath)
-            printLog(str(last_simCenters[objective]), logPath)
-
+            printLog(f"{objective}: {str(last_simCenters[objective])}", logPath)
+        
         printLog("=====================================================", logPath)
         printLog(f"Training the classifiers for the objectives", logPath)
 

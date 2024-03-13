@@ -89,8 +89,9 @@ def reverseAsParamsToObjectives(curves, objectives):
             reverseCurves[paramsTuple][objective] = curves[objective][paramsTuple]
     return reverseCurves
 
-def filter_simulations(FD_Curves, nonconverging):
-    # Converting the unit
+# Returning list of 0 and 1, 1 if the simulation is nonconverging
+def check_convergence(FD_Curves):
+    
     maxDispCorrespondingToMaxForce = -np.inf
 
     for params, dispForce in FD_Curves.items():
@@ -98,29 +99,66 @@ def filter_simulations(FD_Curves, nonconverging):
         force = dispForce["force"]
         if maxDispCorrespondingToMaxForce < disp[np.argmax(force)]: 
             maxDispCorrespondingToMaxForce = disp[np.argmax(force)]
-
-    # print(f"Max disp corresponding to max force: {maxDispCorrespondingToMaxForce}")
     
-    FD_Curves_copy = copy.deepcopy(FD_Curves)
-    
-    for i, (params, dispForce) in enumerate(FD_Curves.items()):  
+    nonconverging_flags = []
+    for i, (params, dispForce) in enumerate(FD_Curves.items()):
         disp = dispForce["displacement"]
         force = dispForce["force"]
         dispCorrespondingToMaxForce = disp[np.argmax(force)]
-
-        if nonconverging == True:
-            if not dispCorrespondingToMaxForce < maxDispCorrespondingToMaxForce - 2:
-                del FD_Curves_copy[params]
-                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (converging)")
-            #else:
-                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (nonconverging)")
+        if dispCorrespondingToMaxForce < maxDispCorrespondingToMaxForce - 2:
+            nonconverging_flags.append(1)
         else:
-            if dispCorrespondingToMaxForce < maxDispCorrespondingToMaxForce - 2:
-                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (nonconverging)")
-                del FD_Curves_copy[params] 
-            #else:
-                #print(f"Disp corresponding to max force: {disp[np.argmax(force)]} (converging)")
+            nonconverging_flags.append(0)
+    return nonconverging_flags
+
+def filter_simulations(FD_Curves, nonconverging_filter):
+
+    FD_Curves_copy = {}
+    nonconverging_flags = check_convergence(FD_Curves)
+    #print(nonconverging_flags)
+    if nonconverging_filter == True:
+        for i, (params, dispForce) in enumerate(FD_Curves.items()):
+            if nonconverging_flags[i] == 1:
+                FD_Curves_copy[params] = dispForce
+    else:
+        for i, (params, dispForce) in enumerate(FD_Curves.items()):
+            if nonconverging_flags[i] == 0:
+                FD_Curves_copy[params] = dispForce
+
     return FD_Curves_copy    
+
+def filter_simulations_simultaneous(combined_objective_value_to_param_FD_Curves, 
+                                    objectives, 
+                                    nonconverging_filter):
+    
+    objective_nonconverging_flags = {}
+    for objective in objectives:
+        objective_nonconverging_flags[objective] = check_convergence(combined_objective_value_to_param_FD_Curves[objective])
+    
+    if nonconverging_filter == True:
+        indices_where_all_objectives_nonconverge = []
+        for i in range(len(objective_nonconverging_flags[objectives[0]])):
+            if all([objective_nonconverging_flags[objective][i] == 1 for objective in objectives]):
+                indices_where_all_objectives_nonconverge.append(i)
+    else:
+        indices_where_all_objectives_converge = []
+        for i in range(len(objective_nonconverging_flags[objectives[0]])):
+            if all([objective_nonconverging_flags[objective][i] == 0 for objective in objectives]):
+                indices_where_all_objectives_converge.append(i)
+
+    combined_objective_value_to_param_FD_Curves_copy = {}
+    for objective in objectives:
+        combined_objective_value_to_param_FD_Curves_copy[objective] = {}
+        for i, (params, dispForce) in enumerate(combined_objective_value_to_param_FD_Curves[objective].items()):
+            if nonconverging_filter == True:
+                if i in indices_where_all_objectives_nonconverge:
+                    combined_objective_value_to_param_FD_Curves_copy[objective][params] = dispForce
+            else:
+                if i in indices_where_all_objectives_converge:
+                    combined_objective_value_to_param_FD_Curves_copy[objective][params] = dispForce
+
+    return combined_objective_value_to_param_FD_Curves_copy
+
 
 def find_sim_center(dispForce):
     disp = dispForce["displacement"]

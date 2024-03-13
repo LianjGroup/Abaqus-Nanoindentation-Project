@@ -1,9 +1,3 @@
-import numpy as np
-import pandas as pd
-
-from sklearn.metrics import mean_squared_error
-from scipy.interpolate import CubicSpline
-from scipy.interpolate import interp1d
 from modules.IO import *
 from modules.calculation import *
 from optimizers.optimize import *
@@ -14,10 +8,7 @@ import stage2_run_initialSims
 import stage3_prepare_simCurves
 import stage4_iterative_calibration
 from math import *
-import json
-from datetime import datetime
 import os
-import prettytable
 
 def main_pipeline():
 
@@ -44,6 +35,5 @@ def main_pipeline():
     printLog(f"The simulations have satisfied the {deviationPercent}% deviation stop condition", logPath)
     printLog("Parameter calibration has successfully completed", logPath)
     
-
 if __name__ == "__main__":
     main_pipeline()

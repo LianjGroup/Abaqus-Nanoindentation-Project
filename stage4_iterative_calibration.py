@@ -111,7 +111,7 @@ def main_iterative_calibration(info):
 
         printLog("Start running iteration simulation", logPath)
         
-        # This is in unit of m and N
+        # This is in unit of m and N (very small number)
         objective_value_to_param_new_FD_Curves_m_N = sim.run_iteration_simulations(next_paramsDict, 
                                                                                iterationIndex)
         

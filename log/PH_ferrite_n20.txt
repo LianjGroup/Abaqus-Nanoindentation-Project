@@ -5281,3 +5281,68 @@ Start running iteration simulation
 Iteration simulation preprocessing stage starts
 Number of jobs required: 3
 Iteration simulation postprocessing stage finished
+
+Welcome to Abaqus nanoindentation CP param calibration project
+
+
+The configurations you have chosen: 
+
++---------------------------+----------------------+
+|       Global Configs      |     User choice      |
++---------------------------+----------------------+
+|      SLURM iteration      |    one_node_small    |
+|   Number of initial sims  |          20          |
+|    Initial sims spacing   |        10000         |
+| Max concurrent sim number |          5           |
+|     Delete output sims    |         yes          |
+|          Material         |     ferrite_n20      |
+|           CP law          | Phenomenological law |
+|       Grains number       |    1441;2744;3198    |
+|        Strain rates       |         0p1          |
+|       Optimizer name      |   LinearRegression   |
+|    Deviation percent X    |          5           |
+|    Deviation percent Y    |          5           |
++---------------------------+----------------------+
+
+Generating necessary directories
+
+The path to your main project folder is
+
+C:\Users\springnuance\Desktop\Abaqus-Nanoindentation-Project
+
+=======================================================================
+FD_Curves.npy for grain_1441_sr_0p1 already exist
+Number of initial simulations for grain_1441_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_2744_sr_0p1 already exist
+Number of initial simulations for grain_2744_sr_0p1: 20 FD curves
+=======================================================================
+FD_Curves.npy for grain_3198_sr_0p1 already exist
+Number of initial simulations for grain_3198_sr_0p1: 20 FD curves
+Iteration simulations exist
+Number of iteration simulations: 1 FD curves
+=====================================================
+The last simultaneously converged sim centers for all objectives are: 
+grain_1441_sr_0p1: {'X': 99.35113500000001, 'Y': 216.74040000000005}
+grain_2744_sr_0p1: {'X': 99.27515000000001, 'Y': 220.57995}
+grain_3198_sr_0p1: {'X': 99.50436499999999, 'Y': 220.85885}
+=====================================================
+Training the classifiers for the objectives
+=====================================================
+Training the regressors for the objectives
+
+############################################################
+
+Running iteration 2 for PH_ferrite_n20
+The next predicted candidate parameters for simulation
+======================================================
+
++-----------+------------------------+
+| Parameter |         Value          |
++-----------+------------------------+
+|    tau0   | 324.1762383436636 MPa  |
+|     a     |   1.2891332430757898   |
+|     h0    | 4500.0612844126035 MPa |
+|   tausat  | 369.9959143724931 MPa  |
++-----------+------------------------+
+

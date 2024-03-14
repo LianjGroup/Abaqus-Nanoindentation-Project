@@ -56,9 +56,11 @@ def main_prepare_simCurves(info):
             iteration_objective_value_to_param_FD_Curves[objective] = np.load(f"{resultPath}/{objective}/iteration/common/FD_Curves.npy", allow_pickle=True).tolist()
 
     combined_objective_value_to_param_FD_Curves = copy.deepcopy(initial_objective_value_to_param_FD_Curves)
-
+    
+    iteration_objective_value_to_param_FD_Curves_copy = copy.deepcopy(iteration_objective_value_to_param_FD_Curves)
+    
     for objective in objectives:
-        combined_objective_value_to_param_FD_Curves[objective].update(iteration_objective_value_to_param_FD_Curves[objective])
+        combined_objective_value_to_param_FD_Curves[objective].update(iteration_objective_value_to_param_FD_Curves_copy[objective])
     
     # Converting units for the FD curves
     # Displacement is in nanometers and force is in micro Newtons in experiment

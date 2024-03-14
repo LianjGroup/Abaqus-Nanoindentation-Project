@@ -111,14 +111,21 @@ def main_iterative_calibration(info):
 
         printLog("Start running iteration simulation", logPath)
         
-        # Unit conversion is already done in postprocess_results_iteration
-        objective_value_to_param_new_FD_Curves = sim.run_iteration_simulations(next_paramsDict, 
+        # This is in unit of m and N
+        objective_value_to_param_new_FD_Curves_m_N = sim.run_iteration_simulations(next_paramsDict, 
                                                                                iterationIndex)
         
+        # unit conversion
+        objective_value_to_param_new_FD_Curves_nm_microN = copy.deepcopy(objective_value_to_param_new_FD_Curves_m_N)
+        for objective in objectives:
+            for params, dispForce in objective_value_to_param_new_FD_Curves_m_N[objective].items():
+                objective_value_to_param_new_FD_Curves_nm_microN[objective][params]["force"] *= 1e6
+                objective_value_to_param_new_FD_Curves_nm_microN[objective][params]["displacement"] *= 1e9
+
         # Updating the combined and iteration FD curves smooth
         for objective in objectives:
-            combined_objective_value_to_param_FD_Curves[objective].update(objective_value_to_param_new_FD_Curves[objective])
-            iteration_objective_value_to_param_FD_Curves[objective].update(objective_value_to_param_new_FD_Curves[objective])
+            combined_objective_value_to_param_FD_Curves[objective].update(objective_value_to_param_new_FD_Curves_nm_microN[objective])
+            iteration_objective_value_to_param_FD_Curves[objective].update(objective_value_to_param_new_FD_Curves_nm_microN[objective])
 
         loss_newIteration = {}
 
@@ -131,9 +138,18 @@ def main_iterative_calibration(info):
         printLog(f"The loss of the new iteration is: ", logPath)
         printLog(str(loss_newIteration), logPath)
 
+
+        # Reconvert unit back to m and N
         # Saving the iteration data
+
+        iteration_objective_value_to_param_FD_Curves_m_N = copy.deepcopy(iteration_objective_value_to_param_FD_Curves)
         for objective in objectives:
-            np.save(f"{resultPath}/{objective}/iteration/common/FD_Curves.npy", iteration_objective_value_to_param_FD_Curves[objective])
+            for params, dispForce in iteration_objective_value_to_param_FD_Curves[objective].items():
+                iteration_objective_value_to_param_FD_Curves_m_N[objective][params]["force"] *= 1e-6
+                iteration_objective_value_to_param_FD_Curves_m_N[objective][params]["displacement"] *= 1e-9
+        
+        for objective in objectives:
+            np.save(f"{resultPath}/{objective}/iteration/common/FD_Curves.npy", iteration_objective_value_to_param_FD_Curves_m_N[objective])
 
         #######################################################
         # Repeating all the steps above before the while loop #

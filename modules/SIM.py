@@ -223,11 +223,10 @@ class SIMULATION():
             displacement, force = read_FD_Curve(f"{simPath}/{objective}/iteration/{iterationIndex}/FD_Curve.txt")
             create_FD_Curve_file(f"{resultPath}/{objective}/iteration/data/{iterationIndex}", displacement, force)
 
-            # This part already does unit conversion, no need to be done in the iterative calibration outer loop
             objective_value_to_param_new_FD_Curves[objective] = {}
             objective_value_to_param_new_FD_Curves[objective][paramsTuple] = {}
-            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['displacement'] = displacement * 1e9
-            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['force'] = force * 1e6
+            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['displacement'] = displacement 
+            objective_value_to_param_new_FD_Curves[objective][paramsTuple]['force'] = force
             
         printLog("Saving successfully iteration simulation results", logPath)
         return objective_value_to_param_new_FD_Curves

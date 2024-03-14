@@ -3,7 +3,7 @@
 #SBATCH --job-name=abaqusArray
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=40
 #SBATCH --time=12:00:00
 #SBATCH --partition=small
 #SBATCH --mem=100G
